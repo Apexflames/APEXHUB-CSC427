@@ -1,0 +1,1346 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>CSC 427 – Compiler Design | APEXHUB</title>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700;800&family=Source+Sans+3:ital,wght@0,300;0,400;0,600;0,700;1,400&family=Fira+Code:wght@400;500&display=swap" rel="stylesheet">
+<style>
+:root{--primary:#1b3a1b;--accent:#2e7d32;--accent2:#00695c;--light-bg:#f1f8f1;--card-bg:#fff;--text:#1a1a2e;--muted:#546e7a;--line:#cfd8dc;--yellow-l:#fff8e1;--yellow-d:#e65100;--green-l:#e8f5e9;--green-d:#2e7d32;--blue-l:#e3f2fd;--blue-d:#0d47a1;--red-l:#ffebee;--red-d:#b71c1c;--teal-l:#e0f2f1;--teal-d:#00695c;--purple-l:#f3e5f5;--purple-d:#6a1b9a;--code-bg:#1a2332;--code-text:#cdd6f4;}
+[data-theme="dark"]{--light-bg:#0d1a0d;--card-bg:#162116;--text:#e8f5e9;--muted:#90a4ae;--line:#1e3320;--primary:#43a047;--accent:#66bb6a;--yellow-l:#3e2800;--yellow-d:#ffcc80;--green-l:#0d1f0d;--green-d:#81c784;--blue-l:#0d2245;--blue-d:#90caf9;--red-l:#3e1515;--red-d:#ef9a9a;--teal-l:#0a2e2b;--teal-d:#80cbc4;--purple-l:#2a0a3a;--purple-d:#ce93d8;--code-bg:#0d1117;--code-text:#cdd6f4;}
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
+body{font-family:'Source Sans 3',sans-serif;font-size:14.5px;line-height:1.75;color:var(--text);background:var(--light-bg);transition:background .3s,color .3s;}
+.shell{max-width:900px;margin:0 auto;}
+.toc-bar{position:sticky;top:0;z-index:200;background:var(--primary);padding:0 14px;display:flex;align-items:center;gap:0;overflow-x:auto;-webkit-overflow-scrolling:touch;scrollbar-width:none;box-shadow:0 3px 14px rgba(0,0,0,.35);transition:background .3s;}
+.toc-bar::-webkit-scrollbar{display:none;}
+.toc-brand{color:white;font-weight:800;font-size:12.5px;letter-spacing:.08em;padding:11px 14px 11px 4px;border-right:1px solid rgba(255,255,255,.2);margin-right:6px;flex-shrink:0;white-space:nowrap;font-family:'Playfair Display',serif;}
+.toc-bar a{color:rgba(255,255,255,.72);text-decoration:none;font-size:10.5px;font-weight:600;letter-spacing:.03em;white-space:nowrap;padding:11px 9px;border-bottom:3px solid transparent;transition:color .2s,border-color .2s;flex-shrink:0;}
+.toc-bar a:hover{color:white;border-bottom-color:#a5d6a7;}
+.dark-toggle{margin-left:auto;flex-shrink:0;background:rgba(255,255,255,.15);border:1px solid rgba(255,255,255,.3);color:white;border-radius:20px;padding:4px 12px;font-size:11px;font-weight:700;cursor:pointer;letter-spacing:.05em;transition:background .2s;white-space:nowrap;}
+.dark-toggle:hover{background:rgba(255,255,255,.25);}
+.page-card{background:var(--card-bg);margin:22px 12px;border-radius:14px;overflow:hidden;box-shadow:0 2px 20px rgba(27,58,27,.1);transition:background .3s;}
+.page-card+.page-card{margin-top:30px;}
+.cover{background:linear-gradient(135deg,#1b3a1b 0%,#2e7d32 50%,#1a237e 100%);min-height:360px;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:52px 24px 44px;text-align:center;}
+.cover-label{font-size:11px;letter-spacing:.35em;color:#a5d6a7;font-weight:700;margin-bottom:12px;text-transform:uppercase;}
+.cover h1{font-family:'Playfair Display',serif;font-size:clamp(28px,8vw,52px);font-weight:800;color:white;line-height:1.1;margin-bottom:8px;}
+.cover-sub{font-size:clamp(13px,4vw,17px);color:#c8e6c9;font-weight:400;margin-bottom:20px;}
+.cover-line{width:80px;height:3px;background:#a5d6a7;border-radius:2px;margin:0 auto 20px;opacity:.8;}
+.cover-desc{font-size:13px;color:rgba(200,230,201,.85);line-height:2;}
+.cover-session{margin-top:28px;font-size:11px;color:rgba(165,214,167,.55);letter-spacing:.14em;}
+.apex-badge{display:inline-block;background:rgba(255,255,255,.15);border:1px solid rgba(255,255,255,.35);border-radius:20px;padding:5px 16px;font-size:11.5px;font-weight:700;color:white;letter-spacing:.1em;font-family:'Playfair Display',serif;margin-bottom:18px;}
+.info-strip{background:var(--green-l);padding:14px 22px;font-size:13px;color:var(--text);border-top:3px solid var(--accent);transition:background .3s,color .3s;}
+.info-strip strong{color:var(--green-d);}
+.topic-banner{background:var(--primary);color:white;padding:15px 22px 13px;display:flex;align-items:center;gap:14px;flex-wrap:wrap;transition:background .3s;}
+.topic-num{background:rgba(255,255,255,.2);border-radius:50%;width:38px;height:38px;display:flex;align-items:center;justify-content:center;font-weight:800;font-size:16px;flex-shrink:0;}
+.topic-title{font-family:'Playfair Display',serif;font-size:clamp(16px,5vw,22px);font-weight:700;line-height:1.2;}
+.topic-sub{font-size:11px;opacity:.6;font-weight:400;display:block;margin-top:2px;}
+.page-pill{margin-left:auto;background:rgba(255,255,255,.16);border-radius:20px;padding:3px 12px;font-size:10.5px;font-weight:700;flex-shrink:0;}
+.card-body{padding:22px 22px 26px;}
+.section-h{background:var(--accent);color:white;padding:8px 22px;font-size:13.5px;font-weight:700;letter-spacing:.01em;margin:24px -22px 16px;}
+.card-body>.section-h:first-child{margin-top:-22px;}
+p{margin-bottom:11px;font-size:13.5px;color:var(--text);}
+ul,ol{margin:8px 0 14px 24px;}
+li{margin-bottom:6px;font-size:13.5px;color:var(--text);}
+strong{color:var(--primary);}
+[data-theme="dark"] strong{color:var(--accent);}
+.box{border-radius:8px;padding:14px 18px;margin:14px 0;font-size:13.5px;}
+.box-title{font-weight:700;font-size:12.5px;letter-spacing:.03em;margin-bottom:6px;text-transform:uppercase;}
+.box-yellow{background:var(--yellow-l);border-left:4px solid #f9a825;}
+.box-yellow .box-title{color:var(--yellow-d);}
+.box-green{background:var(--green-l);border-left:4px solid #43a047;}
+.box-green .box-title{color:var(--green-d);}
+.box-blue{background:var(--blue-l);border-left:4px solid var(--accent);}
+.box-blue .box-title{color:var(--blue-d);}
+.box-red{background:var(--red-l);border-left:4px solid #e53935;}
+.box-red .box-title{color:var(--red-d);}
+.box-teal{background:var(--teal-l);border-left:4px solid #00897b;}
+.box-teal .box-title{color:var(--teal-d);}
+.box-purple{background:var(--purple-l);border-left:4px solid #8e24aa;}
+.box-purple .box-title{color:var(--purple-d);}
+.table-wrap{overflow-x:auto;margin:14px 0 18px;border-radius:8px;}
+table{width:100%;border-collapse:collapse;font-size:13px;min-width:300px;}
+th{background:var(--accent);color:white;padding:10px 13px;text-align:left;font-weight:700;font-size:12.5px;}
+td{padding:9px 13px;border:1px solid var(--line);vertical-align:top;color:var(--text);}
+tr:nth-child(even) td{background:var(--green-l);}
+[data-theme="dark"] tr:nth-child(even) td{background:#1a2e1a;}
+.toggle-section{border:1.5px solid var(--line);border-radius:8px;margin:14px 0;overflow:hidden;transition:border-color .2s;}
+.toggle-header{background:var(--green-l);padding:11px 16px;cursor:pointer;display:flex;align-items:center;justify-content:space-between;font-weight:700;font-size:13px;color:var(--green-d);transition:background .2s;user-select:none;}
+[data-theme="dark"] .toggle-header{color:#81c784;}
+.toggle-header:hover{background:var(--line);}
+.toggle-arrow{font-size:16px;transition:transform .3s;}
+.toggle-content{display:none;padding:16px;font-size:13.5px;}
+.toggle-section.open .toggle-arrow{transform:rotate(180deg);}
+.toggle-section.open .toggle-content{display:block;}
+.sub-sep{margin:26px 0;border:none;border-top:2px dashed var(--line);}
+.card-footer{background:var(--primary);padding:7px 22px;display:flex;justify-content:space-between;align-items:center;font-size:10.5px;color:rgba(255,255,255,.55);transition:background .3s;}
+.card-footer strong{color:rgba(255,255,255,.9);}
+.end-card{background:linear-gradient(135deg,#1b3a1b,#2e7d32);color:white;margin:22px 12px 40px;border-radius:14px;padding:36px 24px;text-align:center;}
+.end-card h2{font-family:'Playfair Display',serif;font-size:28px;margin-bottom:12px;}
+.end-card p{color:rgba(255,255,255,.75);font-size:13.5px;}
+.chip{display:inline-block;padding:2px 10px;border-radius:20px;font-size:11.5px;font-weight:700;margin:2px 3px;}
+.chip-blue{background:var(--blue-l);color:var(--blue-d);}
+.chip-green{background:var(--green-l);color:var(--green-d);}
+.chip-yellow{background:var(--yellow-l);color:var(--yellow-d);}
+.chip-red{background:var(--red-l);color:var(--red-d);}
+.chip-purple{background:var(--purple-l);color:var(--purple-d);}
+/* Code blocks */
+.code-wrap{margin:16px 0 20px;border-radius:10px;overflow:hidden;}
+.code-label{background:#263548;color:#a5d6a7;font-size:11px;font-weight:700;padding:7px 14px;display:flex;align-items:center;gap:10px;letter-spacing:.05em;}
+.code-label .dot{width:10px;height:10px;border-radius:50%;}
+.dot-r{background:#ff5f57;}.dot-y{background:#febc2e;}.dot-g{background:#28c840;}
+pre{background:var(--code-bg);color:var(--code-text);font-family:'Fira Code',monospace;font-size:12.5px;padding:16px 18px;overflow-x:auto;margin:0;line-height:1.7;}
+
+/* ── COMPILER PIPELINE ANIMATION ── */
+.pipeline{background:var(--code-bg);border-radius:12px;padding:20px 16px;margin:16px 0;}
+.pipeline-title{color:#a5d6a7;font-size:11px;font-weight:700;text-align:center;letter-spacing:.1em;margin-bottom:16px;}
+.pipe-flow{display:flex;flex-direction:column;align-items:center;gap:0;}
+.pipe-box{width:200px;background:rgba(255,255,255,.08);border:2px solid rgba(165,214,167,.3);border-radius:8px;padding:8px 14px;text-align:center;cursor:pointer;transition:all .25s;position:relative;}
+.pipe-box:hover,.pipe-box.active{border-color:#a5d6a7;background:rgba(165,214,167,.15);transform:scale(1.04);}
+.pipe-box .pb-num{font-size:10px;color:#a5d6a7;font-weight:700;letter-spacing:.05em;}
+.pipe-box .pb-name{color:white;font-weight:700;font-size:13px;}
+.pipe-box .pb-out{font-size:10px;color:rgba(255,255,255,.45);margin-top:2px;}
+.pipe-arrow{color:#a5d6a7;font-size:18px;line-height:1;margin:2px 0;animation:arrow-pulse 1.5s ease-in-out infinite;}
+@keyframes arrow-pulse{0%,100%{opacity:.4}50%{opacity:1}}
+.pipe-detail{display:none;background:rgba(165,214,167,.08);border:1px solid rgba(165,214,167,.2);border-radius:8px;padding:12px;margin-top:6px;width:280px;color:#cdd6f4;font-size:12px;line-height:1.6;text-align:left;}
+.pipe-box.active+.pipe-arrow+.pipe-detail,.pipe-box.active ~ .pipe-detail{display:block;}
+.pipe-detail-wrap{width:100%;display:flex;flex-direction:column;align-items:center;}
+.pipe-detail-box{display:none;background:rgba(165,214,167,.08);border:1px solid rgba(165,214,167,.2);border-radius:8px;padding:12px;margin:4px 0 0;width:280px;color:#cdd6f4;font-size:12px;line-height:1.6;}
+.pipe-box.active .pipe-detail-box,.pipe-item.active .pipe-detail-box{display:block;}
+.pipe-item{display:flex;flex-direction:column;align-items:center;}
+/* Lexer animation */
+.lex-demo{background:var(--code-bg);border-radius:12px;padding:16px;margin:16px 0;}
+.lex-demo-title{color:#a5d6a7;font-size:11px;font-weight:700;letter-spacing:.05em;margin-bottom:10px;text-align:center;}
+.lex-source{font-family:'Fira Code',monospace;font-size:12px;color:#cdd6f4;background:rgba(255,255,255,.05);border-radius:6px;padding:10px;margin-bottom:10px;line-height:1.8;}
+.lex-source span.lex-highlight{background:rgba(255,235,59,.3);border-radius:3px;transition:background .3s;}
+.lex-tokens{display:flex;flex-wrap:wrap;gap:6px;min-height:40px;padding:8px;background:rgba(255,255,255,.03);border-radius:6px;}
+.lex-tok{padding:3px 8px;border-radius:5px;font-size:11px;font-weight:700;font-family:'Fira Code',monospace;opacity:0;transform:translateY(8px);transition:opacity .4s,transform .4s;}
+.lex-tok.show{opacity:1;transform:translateY(0);}
+.tok-kw{background:#1a237e;color:#90caf9;}.tok-id{background:#1b5e20;color:#a5d6a7;}.tok-num{background:#4a148c;color:#ce93d8;}.tok-op{background:#b71c1c;color:#ef9a9a;}.tok-punc{background:#37474f;color:#cfd8dc;}.tok-str{background:#e65100;color:#ffcc80;}
+.lex-status{color:#90caf9;font-size:11px;font-family:'Fira Code',monospace;min-height:20px;text-align:center;margin-top:8px;}
+.lex-btn{display:block;margin:8px auto 0;background:#2e7d32;color:white;border:none;border-radius:6px;padding:6px 18px;font-size:12px;font-weight:700;cursor:pointer;transition:background .2s;}
+.lex-btn:hover{background:#388e3c;}
+/* Finite Automaton */
+.fa-viz{background:var(--code-bg);border-radius:12px;overflow:hidden;margin:16px 0;}
+.fa-header{background:#263548;padding:10px 16px;display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:8px;}
+.fa-title{color:#a5d6a7;font-size:11px;font-weight:700;letter-spacing:.05em;}
+.fa-canvas{padding:16px;overflow-x:auto;}
+.fa-svg{width:100%;min-width:320px;max-width:560px;display:block;margin:0 auto;}
+/* Parse tree */
+.tree-viz{background:var(--code-bg);border-radius:12px;padding:16px;margin:16px 0;overflow-x:auto;}
+.tree-title{color:#a5d6a7;font-size:11px;font-weight:700;text-align:center;margin-bottom:12px;letter-spacing:.05em;}
+/* RE highlight */
+.re-box{background:rgba(255,255,255,.04);border:1px solid rgba(165,214,167,.2);border-radius:8px;padding:12px 16px;margin:10px 0;font-family:'Fira Code',monospace;font-size:13px;}
+.re-box .re-label{font-size:10.5px;color:#a5d6a7;font-weight:700;margin-bottom:4px;letter-spacing:.05em;}
+.re-expr{color:#ce93d8;font-size:14px;font-weight:700;}
+.re-mean{color:#cdd6f4;font-size:12px;margin-top:6px;}
+/* Parsing animation */
+.parse-demo{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin:14px 0;}
+@media(max-width:560px){.parse-demo{grid-template-columns:1fr;}}
+.parse-side{background:var(--code-bg);border-radius:10px;padding:12px;}
+.parse-side-title{color:#a5d6a7;font-size:11px;font-weight:700;margin-bottom:8px;letter-spacing:.05em;text-align:center;}
+.parse-steps{font-family:'Fira Code',monospace;font-size:11px;color:#cdd6f4;line-height:2;}
+.parse-step-row{display:flex;gap:8px;padding:3px 0;border-bottom:1px solid rgba(255,255,255,.05);transition:background .2s;}
+.parse-step-row.active{background:rgba(165,214,167,.1);}
+.ps-lhs{color:#a5d6a7;min-width:70px;}.ps-arr{color:#febc2e;}.ps-rhs{color:#ce93d8;}
+/* Phase comparison table colour rows */
+.phase-analysis td:first-child{background:#e3f2fd;color:#0d47a1;font-weight:700;}
+.phase-synthesis td:first-child{background:#e8f5e9;color:#1b5e20;font-weight:700;}
+</style>
+</head>
+<body>
+<div class="shell">
+
+<!-- NAV -->
+<nav class="toc-bar">
+  <div class="toc-brand">APEXHUB</div>
+  <a href="#ch1">Intro</a>
+  <a href="#ch2">Context</a>
+  <a href="#ch3">Phases</a>
+  <a href="#ch4">Lexical</a>
+  <a href="#ch5">Syntax</a>
+  <a href="#ch6">Parsing</a>
+  <a href="#ch7">Semantic</a>
+  <a href="#ch8">Optimization</a>
+  <a href="#pastq">Past Q's</a>
+  <a href="#likelyq">Likely Q's</a>
+  <button class="dark-toggle" id="themeBtn" onclick="toggleDark()">🌙 Dark</button>
+</nav>
+
+<!-- COVER -->
+<div class="page-card">
+  <div class="cover">
+    <div class="apex-badge">APEXHUB</div>
+    <div class="cover-label">AAUA · Department of Computer Science · CSC 427</div>
+    <h1>Compiler<br>Design I</h1>
+    <div class="cover-sub">Complete Exam Study Guide with Animations & Plain English</div>
+    <div class="cover-line"></div>
+    <div class="cover-desc">
+      Compiler Introduction &amp; Context &nbsp;|&nbsp; All 6 Phases of Compilation<br>
+      Lexical Analysis &amp; Regular Expressions &nbsp;|&nbsp; Syntax Analysis &amp; BNF/EBNF<br>
+      Parsing Techniques &nbsp;|&nbsp; Semantic Analysis &amp; Type Checking &nbsp;|&nbsp; Code Optimization
+    </div>
+    <div class="cover-session">Adekunle Ajasin University, Akungba-Akoko · 2024/2025 Session</div>
+  </div>
+  <div class="info-strip">
+    <strong>📖 HOW TO USE:</strong> Every topic follows <strong>Textbook Definition → Lecturer's Definition → 🗣️ Plain English → 💡 Real-Life Example</strong>. Click the <strong>animated compiler pipeline</strong> phases to see what each one does. Watch the <strong>live tokenizer</strong> break C code into tokens step by step. Toggle 🌙 dark mode above.
+  </div>
+</div>
+
+<!-- ══ CH1: INTRODUCTION ══ -->
+<div class="page-card" id="ch1">
+  <div class="topic-banner">
+    <div class="topic-num">1</div>
+    <div>
+      <div class="topic-title">Introduction to Compilers</div>
+      <span class="topic-sub">Compiler · Assembler · Interpreter · Differences</span>
+    </div>
+    <div class="page-pill">Topic 1</div>
+  </div>
+  <div class="card-body">
+
+    <div class="section-h">1.1 What is a Compiler?</div>
+    <p><strong>Textbook Definition (Louden):</strong> A compiler is a program that reads a program written in one language — the source language — and translates it into an equivalent program in another language — the target language.</p>
+    <p><strong>Lecturer's Definition:</strong> The goal of a compiler is to translate a source program in some high level language into some other form called target program. The source program is a high-level programming language (a problem-oriented language), and the target program is a mixture of machine level instructions, information about hardware registers, system resources, and memory addresses. An important part of any compiler is the detection and reporting of errors.</p>
+
+    <div class="box box-yellow">
+      <div class="box-title">🗣️ Plain English</div>
+      A compiler is like a human translator who reads a French book (your C++ code) and produces a complete English version (machine code). The translation is done all at once before anyone reads it. Once translated, the English version (executable) runs directly without needing the translator present.
+    </div>
+
+    <div class="section-h">1.2 Three Types of Translators</div>
+    <div class="table-wrap"><table>
+      <tr><th>Translator</th><th>Definition</th><th>Input → Output</th><th>Real-Life Analogy</th></tr>
+      <tr><td><strong>Compiler</strong></td><td>Translates high-level source program into target (usually machine/assembly) code all at once before execution</td><td>C/Java code → Machine code</td><td>Translating an entire book into another language before publishing it</td></tr>
+      <tr><td><strong>Assembler</strong></td><td>Translates assembly language programs into machine code (binary instructions for the CPU)</td><td>Assembly → Machine code</td><td>Converting shorthand notes into full sentences the CPU understands directly</td></tr>
+      <tr><td><strong>Interpreter</strong></td><td>Takes both source program AND input data, translating and executing each statement one at a time. Translation and execution phases are one and the same.</td><td>Python/JS code + input → Output directly</td><td>A live interpreter at a conference translating speech as it happens, sentence by sentence</td></tr>
+    </table></div>
+
+    <div class="box box-blue">
+      <div class="box-title">💡 Compiler vs Interpreter Key Difference</div>
+      A compiler translates the <strong>entire program first</strong>, then you run the output separately. An interpreter translates <strong>and executes line by line simultaneously</strong> — it needs to be present every time the program runs. That's why compiled programs (C, C++) run faster but take time to compile; interpreted programs (Python, JavaScript) start instantly but run slower.
+    </div>
+
+    <div class="section-h">1.3 Types of Compilers</div>
+    <div class="table-wrap"><table>
+      <tr><th>Type</th><th>Description</th></tr>
+      <tr><td><strong>Single-Pass Compiler</strong></td><td>Makes one pass through source code. Faster but limited optimization.</td></tr>
+      <tr><td><strong>Multi-Pass Compiler</strong></td><td>Makes multiple passes. Better optimization.</td></tr>
+      <tr><td><strong>Cross Compiler</strong></td><td>Runs on one platform but produces code for a different platform (e.g., compiling for ARM processor on an x86 machine)</td></tr>
+      <tr><td><strong>Just-In-Time (JIT) Compiler</strong></td><td>Compiles code at runtime (e.g., Java JVM). Hybrid between compiler and interpreter.</td></tr>
+      <tr><td><strong>Bootstrapping Compiler</strong></td><td>A compiler written in the language it compiles (e.g., C compiler written in C)</td></tr>
+    </table></div>
+
+  </div>
+  <div class="card-footer"><span>CSC 427 · AAUA</span><strong>APEXHUB</strong></div>
+</div>
+
+<!-- ══ CH2: CONTEXT ══ -->
+<div class="page-card" id="ch2">
+  <div class="topic-banner">
+    <div class="topic-num">2</div>
+    <div>
+      <div class="topic-title">Context of a Compiler</div>
+      <span class="topic-sub">Preprocessor · Linker · Loader · Relocatable Code</span>
+    </div>
+    <div class="page-pill">Topic 2</div>
+  </div>
+  <div class="card-body">
+
+    <div class="section-h">2.1 The Complete Compilation Process</div>
+    <p>A compiler does not work alone. The complete process of compilation goes through several tools:</p>
+    <p style="text-align:center;font-family:'Fira Code',monospace;font-size:12px;padding:12px;background:var(--green-l);border-radius:8px;line-height:2.2;">
+      Skeletal Source Program<br>↓<br><strong>Preprocessor</strong><br>↓ Source Program<br><strong>Compiler</strong><br>↓ Assembly Program<br><strong>Assembler</strong><br>↓ Relocatable M/C Code<br><strong>Loader / Linker</strong><br>↓<br><strong>Absolute Machine Code (Executable)</strong>
+    </p>
+
+    <div class="section-h">2.2 The Preprocessor</div>
+    <p><strong>Definition:</strong> The preprocessor is a compile-time software tool which is called before the compiler itself is being executed. It is text-based — it has no knowledge of the syntax and semantics of the language but instead treats the source code as pure text.</p>
+    <p><strong>Preprocessing Operations:</strong></p>
+    <div class="toggle-section">
+      <div class="toggle-header" onclick="toggleSec(this)"><span>(a) Inclusion of Header Files</span><span class="toggle-arrow">▼</span></div>
+      <div class="toggle-content">
+        <p>In C++, <code>#include &lt;iostream.h&gt;</code> is replaced by the full contents of the iostream.h header file before compilation. This gives the compiler access to declarations it needs.</p>
+        <div class="box box-yellow"><div class="box-title">🗣️ Plain English</div>Like "copy-pasting" a standard document into your own document before printing. The preprocessor literally pastes the header file contents into your code.</div>
+      </div>
+    </div>
+    <div class="toggle-section">
+      <div class="toggle-header" onclick="toggleSec(this)"><span>(b) Macro Expansion — #define</span><span class="toggle-arrow">▼</span></div>
+      <div class="toggle-content">
+        <p>A macro is a fragment of code given a name. Whenever the name is used, it is replaced by the code. Example:</p>
+        <div class="code-wrap"><div class="code-label"><span class="dot dot-r"></span><span class="dot dot-y"></span><span class="dot dot-g"></span><span>C macro example</span></div>
+        <pre>#define MAX_SIZE 10
+int main() {
+    int size = 0;
+    size = size + MAX_SIZE;   // preprocessor replaces MAX_SIZE with 10
+    printf("\n value = %d\n", size);
+    return 0;
+}</pre></div>
+        <div class="box box-yellow"><div class="box-title">🗣️ Plain English</div>Like using "Ctrl+F and Replace All" — every occurrence of MAX_SIZE gets replaced with 10 before the compiler even sees the code.</div>
+      </div>
+    </div>
+    <div class="toggle-section">
+      <div class="toggle-header" onclick="toggleSec(this)"><span>(c) Conditional Compilation — #ifdef / #endif</span><span class="toggle-arrow">▼</span></div>
+      <div class="toggle-content">
+        <p>Selecting lines of source code to be compiled or ignored. Begins with #ifdef and ends with #endif.</p>
+        <div class="box box-blue"><div class="box-title">💡 Real-Life Example</div>Like having a document with sections marked "Print only if audience is engineers." The preprocessor only includes the relevant sections based on a flag set at the top.</div>
+      </div>
+    </div>
+    <div class="toggle-section">
+      <div class="toggle-header" onclick="toggleSec(this)"><span>(d) Inline Functions</span><span class="toggle-arrow">▼</span></div>
+      <div class="toggle-content">
+        <p>Grouping statements together with <code>inline</code> keyword. When an inline function is called, the compiler replaces the function call with the actual body of the function — saving the overhead of a function call.</p>
+        <div class="box box-green"><div class="box-title">✅ Benefit</div>Saves the time taken when calling a function and prevents writing the same code multiple times.</div>
+      </div>
+    </div>
+
+    <div class="section-h">2.3 The Linker</div>
+    <p><strong>Definition:</strong> A linker combines object code (machine code that has not yet been linked) produced from compiling and assembling many source programs, as well as standard library functions and resources supplied by the operating system.</p>
+    <p>It resolves references in each object file to external variables and procedures declared in other files, and resolves symbolic references to produce either an <strong>executable</strong> or <strong>dynamic library</strong>.</p>
+    <div class="box box-yellow">
+      <div class="box-title">🗣️ Plain English</div>
+      Imagine building a house where different teams built the kitchen, living room, and bathroom separately. The linker is the construction team that connects all these separately built rooms together into one complete house (executable program).
+    </div>
+
+    <div class="section-h">2.4 The Loader</div>
+    <p><strong>Definition:</strong> Compilers, assemblers and linkers usually produce code whose memory references are made relative to an undetermined starting location — this is called <strong>relocatable machine code</strong>. A loader calculates appropriate <strong>absolute addresses</strong> for these memory locations and amends the code to use these addresses so the program can actually execute in memory.</p>
+    <div class="box box-blue">
+      <div class="box-title">💡 Key Terms</div>
+      <strong>Relocatable Code</strong> — Machine code that uses relative addresses (can be loaded anywhere in memory).<br>
+      <strong>Absolute Machine Code</strong> — Code with fixed, actual memory addresses ready to execute.<br>
+      <strong>Literal</strong> — A constant value that appears directly in code (e.g., the number 42, the string "hello").<br>
+      <strong>Delimiter</strong> — A character that separates or terminates tokens (e.g., semicolons, commas, braces in C).
+    </div>
+
+  </div>
+  <div class="card-footer"><span>CSC 427 · AAUA</span><strong>APEXHUB</strong></div>
+</div>
+
+<!-- ══ CH3: PHASES ══ -->
+<div class="page-card" id="ch3">
+  <div class="topic-banner">
+    <div class="topic-num">3</div>
+    <div>
+      <div class="topic-title">Phases of a Compiler</div>
+      <span class="topic-sub">All 6 Phases · Analysis vs Synthesis · Symbol Table · Error Handling</span>
+    </div>
+    <div class="page-pill">Topic 3</div>
+  </div>
+  <div class="card-body">
+
+    <div class="section-h">3.1 Overview — Analysis/Synthesis Model</div>
+    <p>The process of compilation is split into <strong>six phases</strong>, each of which interacts with a symbol table manager and an error handler. This is called the <strong>analysis/synthesis model</strong> of compilation:</p>
+    <ul>
+      <li><strong>Analysis phases</strong> are machine-independent — they understand the source language</li>
+      <li><strong>Synthesis phases</strong> are machine-dependent — they produce the target code</li>
+    </ul>
+
+    <p><strong>Click any phase below to see what it does:</strong></p>
+
+    <!-- ANIMATED PIPELINE -->
+    <div class="pipeline">
+      <div class="pipeline-title">⚙️ INTERACTIVE COMPILER PIPELINE — CLICK A PHASE</div>
+      <div class="pipe-flow" id="pipeFlow"></div>
+    </div>
+
+    <div class="section-h">3.2 Analysis vs Synthesis Phases</div>
+    <div class="table-wrap"><table>
+      <tr><th>Phase</th><th>Group</th><th>Input</th><th>Output</th></tr>
+      <tr class="phase-analysis"><td>1. Lexical Analysis</td><td>Analysis</td><td>Source program (character stream)</td><td>Token stream</td></tr>
+      <tr class="phase-analysis"><td>2. Syntax Analysis</td><td>Analysis</td><td>Token stream</td><td>Parse tree / syntax tree</td></tr>
+      <tr class="phase-analysis"><td>3. Semantic Analysis</td><td>Analysis</td><td>Parse tree + symbol table</td><td>Annotated tree</td></tr>
+      <tr class="phase-synthesis"><td>4. Intermediate Code Gen</td><td>Synthesis</td><td>Annotated tree</td><td>Intermediate code (TAC)</td></tr>
+      <tr class="phase-synthesis"><td>5. Code Optimization</td><td>Synthesis</td><td>Intermediate code</td><td>Optimized intermediate code</td></tr>
+      <tr class="phase-synthesis"><td>6. Code Generation</td><td>Synthesis</td><td>Optimized code</td><td>Target machine code</td></tr>
+    </table></div>
+
+    <div class="section-h">3.3 Symbol Table Management</div>
+    <p><strong>Definition:</strong> A symbol table is a data structure containing all the identifiers (names of variables, procedures, etc.) of a source program together with all the attributes of each identifier.</p>
+    <p>For <strong>variables</strong>: type, memory size, scope. For <strong>procedures/functions</strong>: number and type of arguments, method of passing each argument, return type.</p>
+    <div class="box box-blue"><div class="box-title">💡 Purpose</div>The symbol table provides quick and uniform access to identifier attributes throughout the compilation process. Information is usually put in during lexical and/or syntax analysis phases.</div>
+
+    <div class="section-h">3.4 Error Handling</div>
+    <p>Each of the six phases can encounter errors. On detecting an error the compiler must: report the error helpfully, correct the error if possible, and continue processing to find further errors.</p>
+    <div class="table-wrap"><table>
+      <tr><th>Error Type</th><th>Description</th><th>Example</th></tr>
+      <tr><td><strong>Lexical Error</strong></td><td>Mistake in a lexeme — a character or character sequence that cannot form a valid token</td><td>Typing <code>tehn</code> instead of <code>then</code>, missing quote in a string literal</td></tr>
+      <tr><td><strong>Grammatical Error</strong></td><td>Violates the grammatical rules of the language (syntax error)</td><td><code>if x = 7 y := 4</code> — missing <code>then</code></td></tr>
+      <tr><td><strong>Type Error</strong></td><td>Operator applied to argument of wrong type</td><td>Adding an integer to a function name</td></tr>
+      <tr><td><strong>Logical Error</strong></td><td>Badly conceived program logic — syntactically correct but wrong result</td><td><code>while x = y</code> where x and y start equal and loop never changes them — infinite loop</td></tr>
+      <tr><td><strong>Run-time Error</strong></td><td>Can only be detected when program is executed</td><td>Division by zero, array index out of bounds</td></tr>
+    </table></div>
+
+  </div>
+  <div class="card-footer"><span>CSC 427 · AAUA</span><strong>APEXHUB</strong></div>
+</div>
+
+<!-- ══ CH4: LEXICAL ANALYSIS ══ -->
+<div class="page-card" id="ch4">
+  <div class="topic-banner">
+    <div class="topic-num">4</div>
+    <div>
+      <div class="topic-title">Lexical Analysis</div>
+      <span class="topic-sub">Tokens · Patterns · Lexemes · Regular Expressions · Finite Automata</span>
+    </div>
+    <div class="page-pill">Topic 4</div>
+  </div>
+  <div class="card-body">
+
+    <div class="section-h">4.1 What is Lexical Analysis?</div>
+    <p><strong>Textbook (Louden):</strong> Lexical analysis is the process of recognizing tokens from the source file. A lexical analyzer (also called a scanner or lexer) operates by reading characters from the source file and recognizing strings of characters that belong together as individual units of meaning — called tokens.</p>
+    <p><strong>Lecturer's Definition:</strong> Lexical Analysis is the process of breaking the input string into tokens. The part of a compiler that reads the input of characters and converts it into a stream of tokens is called the <strong>Lexical Analyser</strong> or <strong>Lexer</strong> or <strong>scanner</strong> or <strong>tokenizer</strong>.</p>
+
+    <div class="box box-yellow">
+      <div class="box-title">🗣️ Plain English</div>
+      Think of reading an English sentence. Before understanding it, you first recognize the individual words (tokens). Lexical analysis does the same — it reads raw characters and groups them into meaningful "words" for the compiler. It doesn't care about grammar yet — just identifies what each piece is.
+    </div>
+
+    <div class="section-h">4.2 Token, Pattern, Lexeme — The Key Three</div>
+    <div class="table-wrap"><table>
+      <tr><th>Term</th><th>Definition</th><th>Example</th></tr>
+      <tr><td><strong>Token</strong></td><td>An object that has a type and a value. A category of lexeme. E.g. keyword, identifier, number.</td><td><code>int(2)</code>, <code>arithoperator(+)</code></td></tr>
+      <tr><td><strong>Pattern</strong></td><td>A rule that specifies when a sequence of characters from the input constitutes a token. Described using Regular Expressions.</td><td>A letter followed by letters/digits = identifier pattern</td></tr>
+      <tr><td><strong>Lexeme</strong></td><td>An instance of a token — the actual character string from the source code that matches the pattern. It is the actual token value.</td><td>The string <code>if</code> is a lexeme matching the keyword token <code>if</code></td></tr>
+    </table></div>
+
+    <div class="section-h">4.3 Live Tokenizer — Watch Lexical Analysis in Action</div>
+    <div class="lex-demo">
+      <div class="lex-demo-title">⚡ LEXICAL ANALYSIS DEMO — Press "Next Token" to tokenize step by step</div>
+      <div class="lex-source" id="lexSource">
+        <span id="ls0">main</span><span id="ls1">(</span><span id="ls2">)</span><span id="ls3"> {</span><br>
+        &nbsp;&nbsp;<span id="ls4">Int</span> <span id="ls5">i</span> <span id="ls6">=</span> <span id="ls7">20</span><span id="ls8">,</span> <span id="ls9">j</span> <span id="ls10">=</span> <span id="ls11">30</span><span id="ls12">,</span> <span id="ls13">k</span><span id="ls14">;</span><br>
+        &nbsp;&nbsp;<span id="ls15">k</span> <span id="ls16">=</span> <span id="ls17">i</span> <span id="ls18">+</span> <span id="ls19">j</span><span id="ls20">;</span><br>
+        &nbsp;&nbsp;<span id="ls21">if</span><span id="ls22">(</span><span id="ls23">k</span><span id="ls24">&gt;=</span><span id="ls25">50</span><span id="ls26">)</span><span id="ls27">{</span><br>
+        &nbsp;&nbsp;&nbsp;&nbsp;<span id="ls28">printf</span><span id="ls29">(</span><span id="ls30">"hello"</span><span id="ls31">)</span><span id="ls32">;</span><br>
+        &nbsp;&nbsp;<span id="ls33">}</span><span id="ls34">}</span>
+      </div>
+      <div class="lex-tokens" id="lexTokens"></div>
+      <div class="lex-status" id="lexStatus">Press "Next Token" to begin tokenizing...</div>
+      <button class="lex-btn" onclick="nextToken()">▶ Next Token</button>
+      <button class="lex-btn" style="background:#546e7a;margin-top:4px;" onclick="resetLex()">↺ Reset</button>
+    </div>
+
+    <div class="section-h">4.4 Responsibilities of a Lexical Analyser (5 Key)</div>
+    <ol>
+      <li><strong>Tokenization</strong> — Reading characters and grouping them into meaningful tokens (keywords, identifiers, literals, operators, punctuation)</li>
+      <li><strong>Whitespace & Comment Removal</strong> — Stripping out spaces, newlines, tabs and comments which are not passed to the syntax analyser</li>
+      <li><strong>Symbol Table Interaction</strong> — When an identifier is found, the lexer enters it into the symbol table with its attributes</li>
+      <li><strong>Error Detection</strong> — Detecting lexical errors such as invalid characters or malformed lexemes and reporting them</li>
+      <li><strong>Line Counting</strong> — Keeping track of line numbers to help produce meaningful error messages referencing the correct location in source code</li>
+    </ol>
+
+    <div class="section-h">4.5 How Identifiers Are Handled</div>
+    <p>When the lexical analyser encounters an identifier (a variable name, function name, etc.):</p>
+    <ol>
+      <li>It reads the character sequence that matches the identifier pattern (letter followed by letters/digits)</li>
+      <li>It checks the symbol table to see if this identifier already exists</li>
+      <li>If it does NOT exist: a new entry is created in the symbol table with the identifier's name and attributes (type, scope, etc.)</li>
+      <li>If it DOES exist: the existing entry is retrieved</li>
+      <li>The lexer returns a token of type <code>id</code> (identifier) with a pointer to the symbol table entry as its value</li>
+    </ol>
+
+    <div class="section-h">4.6 Regular Expressions (RE)</div>
+    <p><strong>Definition (Louden):</strong> Regular expressions are a formal way of specifying patterns for strings. They are the standard notation for describing the structure of tokens and are used to define the rules of the lexer.</p>
+    <p><strong>Formal RE Definition (Lecturer):</strong> Let I be a class of regular languages over some alphabet Σ. Regular expressions are defined as follows:</p>
+    <div class="re-box"><div class="re-label">RULE 1 — Empty Set</div><div class="re-expr">∅ (Phi)</div><div class="re-mean">∅ is an element of I, denoting the empty set. The corresponding RE is ∅.</div></div>
+    <div class="re-box"><div class="re-label">RULE 2 — Empty String</div><div class="re-expr">λ (lambda)</div><div class="re-mean">{λ} is an element of I with regular expression λ. Represents the empty string.</div></div>
+    <div class="re-box"><div class="re-label">RULE 3 — Single Character</div><div class="re-expr">∀ a ∈ Σ, {a}</div><div class="re-mean">For every a in alphabet Σ, {a} is an element of I with regular expression a.</div></div>
+    <div class="re-box"><div class="re-label">RULE 4a — Concatenation</div><div class="re-expr">(r₁r₂)</div><div class="re-mean">L₁L₂ is an element of I with regular expression (r₁r₂), representing the concatenation of both languages. Example: ab matches the string "ab".</div></div>
+    <div class="re-box"><div class="re-label">RULE 4b — Union / Alternation</div><div class="re-expr">(r₁ + r₂) or (r₁ | r₂)</div><div class="re-mean">L₁|L₂ is an element of I with regular expression (r₁ + r₂), representing the union. Example: a|b matches "a" OR "b".</div></div>
+    <div class="re-box"><div class="re-label">RULE 4c — Kleene Star (zero or more)</div><div class="re-expr">(r₁)*</div><div class="re-mean">L₁* is an element of I with regular expression (r₁)*. Represents zero or more repetitions. Example: a* matches "", "a", "aa", "aaa", ...</div></div>
+
+    <div class="section-h">4.7 RE to Finite Automaton — NFA &amp; DFA</div>
+    <p>Specifications are written using Regular Expressions. These are then converted to Finite Automata (FA) to actually perform the recognition. There are two types:</p>
+    <div class="table-wrap"><table>
+      <tr><th>Type</th><th>Full Name</th><th>Key Property</th></tr>
+      <tr><td><strong>NFA</strong></td><td>Non-deterministic Finite Automaton</td><td>Can have multiple transitions for the same input; has ε-transitions (transitions on empty string). Easier to construct from RE.</td></tr>
+      <tr><td><strong>DFA</strong></td><td>Deterministic Finite Automaton</td><td>Exactly one transition per input symbol per state. No ε-transitions. Used in actual implementation.</td></tr>
+    </table></div>
+    <p><strong>Conversion Process:</strong> RE → NFA (Thompson's Construction) → DFA (Subset Construction) → Minimized DFA → Lexer code</p>
+
+    <!-- FA Visualization -->
+    <div class="fa-viz">
+      <div class="fa-header">
+        <div class="fa-title">🔵 DFA — Recognizing a Valid Identifier: letter(letter|digit)*</div>
+      </div>
+      <div class="fa-canvas">
+        <svg class="fa-svg" viewBox="0 0 520 130" xmlns="http://www.w3.org/2000/svg">
+          <defs><marker id="arr" markerWidth="8" markerHeight="6" refX="8" refY="3" orient="auto"><polygon points="0 0, 8 3, 0 6" fill="#a5d6a7"/></marker></defs>
+          <!-- states -->
+          <circle cx="80" cy="65" r="28" fill="none" stroke="#a5d6a7" stroke-width="2"/>
+          <text x="80" y="62" fill="#a5d6a7" text-anchor="middle" font-size="11" font-family="Fira Code">q₀</text>
+          <text x="80" y="76" fill="#cdd6f4" text-anchor="middle" font-size="9">start</text>
+          <circle cx="240" cy="65" r="28" fill="none" stroke="#a5d6a7" stroke-width="2"/>
+          <circle cx="240" cy="65" r="22" fill="none" stroke="#a5d6a7" stroke-width="1.5"/>
+          <text x="240" y="62" fill="#a5d6a7" text-anchor="middle" font-size="11" font-family="Fira Code">q₁</text>
+          <text x="240" y="76" fill="#81c784" text-anchor="middle" font-size="9">accept</text>
+          <circle cx="400" cy="65" r="28" fill="none" stroke="#ef9a9a" stroke-width="2"/>
+          <text x="400" y="62" fill="#ef9a9a" text-anchor="middle" font-size="11" font-family="Fira Code">q₂</text>
+          <text x="400" y="76" fill="#ef9a9a" text-anchor="middle" font-size="9">error</text>
+          <!-- arrows -->
+          <line x1="20" y1="65" x2="48" y2="65" stroke="#a5d6a7" stroke-width="1.5" marker-end="url(#arr)"/>
+          <line x1="108" y1="65" x2="208" y2="65" stroke="#a5d6a7" stroke-width="1.5" marker-end="url(#arr)"/>
+          <text x="158" y="57" fill="#febc2e" font-size="10" text-anchor="middle" font-family="Fira Code">letter</text>
+          <!-- self loop q1 -->
+          <path d="M 230 37 Q 240 10 250 37" fill="none" stroke="#a5d6a7" stroke-width="1.5" marker-end="url(#arr)"/>
+          <text x="240" y="18" fill="#febc2e" font-size="10" text-anchor="middle" font-family="Fira Code">letter|digit</text>
+          <!-- q0 to error -->
+          <path d="M 90 90 Q 240 140 388 90" fill="none" stroke="#ef9a9a" stroke-width="1.5" stroke-dasharray="4" marker-end="url(#arr)"/>
+          <text x="240" y="132" fill="#ef9a9a" font-size="10" text-anchor="middle" font-family="Fira Code">digit or other</text>
+          <!-- q1 to error on other -->
+          <line x1="268" y1="65" x2="368" y2="65" stroke="#ef9a9a" stroke-width="1.5" stroke-dasharray="4" marker-end="url(#arr)"/>
+          <text x="318" y="57" fill="#ef9a9a" font-size="10" text-anchor="middle" font-family="Fira Code">other</text>
+        </svg>
+      </div>
+    </div>
+    <p style="font-size:12px;text-align:center;opacity:.7;">q₀ = start (no input), q₁ = accepting state (valid identifier found), q₂ = error state</p>
+
+  </div>
+  <div class="card-footer"><span>CSC 427 · AAUA</span><strong>APEXHUB</strong></div>
+</div>
+
+<!-- ══ CH5: SYNTAX ANALYSIS ══ -->
+<div class="page-card" id="ch5">
+  <div class="topic-banner">
+    <div class="topic-num">5</div>
+    <div>
+      <div class="topic-title">Syntax Analysis (Parsing)</div>
+      <span class="topic-sub">CFG · BNF · EBNF · Parse Trees · Parsers</span>
+    </div>
+    <div class="page-pill">Topic 5</div>
+  </div>
+  <div class="card-body">
+
+    <div class="section-h">5.1 What is Syntax Analysis?</div>
+    <p><strong>Textbook (Louden):</strong> Syntax analysis, or parsing, is the process of determining the syntactic structure of a program — constructing a parse tree or syntax tree that represents the grammatical structure of the token sequence produced by the scanner.</p>
+    <p><strong>Lecturer's Definition:</strong> Syntax or Parser is the structure of a language. It is the second step — a compiler needs to find the structure in the stream of tokens it gets from the lexer using grammar rules. The formal method for describing syntax was developed by Noam Chomsky in the 1950s using the idea of <strong>context-free grammar (CFG)</strong>.</p>
+
+    <div class="box box-yellow">
+      <div class="box-title">🗣️ Plain English</div>
+      If lexical analysis reads individual words, syntax analysis checks that those words form grammatically correct sentences. For example, "i = 20" is a valid assignment statement, but "= i 20" is not — even though all three tokens are valid. The parser checks the structure.
+    </div>
+
+    <div class="section-h">5.2 Context-Free Grammar (CFG)</div>
+    <p><strong>Definition:</strong> A context-free grammar (CFG) consists of:</p>
+    <ul>
+      <li><strong>Terminal symbols</strong> — actual tokens from the language (keywords, operators, identifiers)</li>
+      <li><strong>Non-terminal symbols</strong> — names for grammar structures (expr, stmt, factor)</li>
+      <li><strong>Productions</strong> — rules of the form: Nonterminal → sequence of terminals and nonterminals</li>
+      <li><strong>Start symbol</strong> — the top-level nonterminal (e.g., S or program)</li>
+    </ul>
+    <p>CFG permits a single nonterminal on the left-hand side of productions, followed by a right-hand side of symbols or other structure names.</p>
+
+    <div class="section-h">5.3 BNF and EBNF</div>
+    <p><strong>BNF (Backus-Naur Form)</strong> was developed by John Backus with contributions by Peter Naur, as a notational system for describing context-free grammars.</p>
+    <p><strong>EBNF (Extended BNF)</strong> expresses more clearly the repetitive nature of BNFs.</p>
+    <div class="table-wrap"><table>
+      <tr><th>BNF Symbol</th><th>Meaning</th><th>EBNF Symbol</th><th>Meaning</th></tr>
+      <tr><td><code>::=</code></td><td>Consists of / is the same as (definition)</td><td><code>=</code></td><td>Is defined to be</td></tr>
+      <tr><td><code>&lt; &gt;</code></td><td>The name of the structure being described (nonterminal)</td><td><code>[x] / ?</code></td><td>Optional — 0 or 1 instances of x</td></tr>
+      <tr><td><code>|</code></td><td>"Or" or Alternation</td><td><code>{x} / x*</code></td><td>0 or more instances of x</td></tr>
+      <tr><td><code>( )</code></td><td>Group things together</td><td><code>x{x} / x+</code></td><td>1 or more instances of x</td></tr>
+      <tr><td></td><td></td><td><code>'x'</code></td><td>Terminal symbol in single quotes</td></tr>
+    </table></div>
+
+    <div class="section-h">5.4 What is a Parser?</div>
+    <p><strong>Definition:</strong> A parser is a component of a compiler that takes a sequence of tokens and builds a parse tree (or determines that the input does not conform to the grammar — a syntax error). The parse tree is a hierarchical representation of the grammatical structure of the input.</p>
+    <div class="box box-blue">
+      <div class="box-title">💡 Parser Strategies</div>
+      <strong>Top-down parsing:</strong> Starts from the start symbol (root) and works DOWN towards the leaves (terminals) by expanding nonterminals. Constructs derivations from root to leaves.<br><br>
+      <strong>Bottom-up parsing:</strong> Starts from the leaves (input tokens) and works UPWARD towards the root by reducing right-hand sides of rules to their left-hand nonterminals. Constructs derivations from leaves to root.
+    </div>
+
+    <div class="section-h">5.5 Parse Tree Visual Example</div>
+    <p>Grammar: S → aABe, A → Abc | b, B → d &nbsp;— parsing string <strong>aabcde</strong></p>
+    <div class="tree-viz">
+      <div class="tree-title">📊 PARSE TREE for string "aabcde" using S → aABe, A → Abc | b, B → d</div>
+      <svg viewBox="0 0 500 220" xmlns="http://www.w3.org/2000/svg" style="width:100%;max-width:500px;display:block;margin:0 auto;">
+        <defs><marker id="tarr" markerWidth="6" markerHeight="5" refX="6" refY="2.5" orient="auto"><polygon points="0 0, 6 2.5, 0 5" fill="#a5d6a7"/></marker></defs>
+        <!-- Root S -->
+        <ellipse cx="250" cy="22" rx="18" ry="14" fill="none" stroke="#a5d6a7" stroke-width="1.5"/>
+        <text x="250" y="26" fill="#a5d6a7" text-anchor="middle" font-size="13" font-family="Fira Code" font-weight="bold">S</text>
+        <!-- Level 2: a A B e -->
+        <ellipse cx="80" cy="80" rx="14" ry="12" fill="none" stroke="#febc2e" stroke-width="1.5"/>
+        <text x="80" y="84" fill="#febc2e" text-anchor="middle" font-size="12" font-family="Fira Code">a</text>
+        <ellipse cx="180" cy="80" rx="18" ry="12" fill="none" stroke="#a5d6a7" stroke-width="1.5"/>
+        <text x="180" y="84" fill="#a5d6a7" text-anchor="middle" font-size="12" font-family="Fira Code" font-weight="bold">A</text>
+        <ellipse cx="320" cy="80" rx="18" ry="12" fill="none" stroke="#a5d6a7" stroke-width="1.5"/>
+        <text x="320" y="84" fill="#a5d6a7" text-anchor="middle" font-size="12" font-family="Fira Code" font-weight="bold">B</text>
+        <ellipse cx="420" cy="80" rx="14" ry="12" fill="none" stroke="#febc2e" stroke-width="1.5"/>
+        <text x="420" y="84" fill="#febc2e" text-anchor="middle" font-size="12" font-family="Fira Code">e</text>
+        <!-- S to children -->
+        <line x1="235" y1="33" x2="90" y2="68" stroke="#cdd6f4" stroke-width="1" marker-end="url(#tarr)"/>
+        <line x1="245" y1="34" x2="182" y2="68" stroke="#cdd6f4" stroke-width="1" marker-end="url(#tarr)"/>
+        <line x1="255" y1="34" x2="318" y2="68" stroke="#cdd6f4" stroke-width="1" marker-end="url(#tarr)"/>
+        <line x1="265" y1="33" x2="410" y2="68" stroke="#cdd6f4" stroke-width="1" marker-end="url(#tarr)"/>
+        <!-- A children: A b c -->
+        <ellipse cx="120" cy="150" rx="18" ry="12" fill="none" stroke="#a5d6a7" stroke-width="1.5"/>
+        <text x="120" y="154" fill="#a5d6a7" text-anchor="middle" font-size="12" font-family="Fira Code" font-weight="bold">A</text>
+        <ellipse cx="180" cy="150" rx="14" ry="12" fill="none" stroke="#febc2e" stroke-width="1.5"/>
+        <text x="180" y="154" fill="#febc2e" text-anchor="middle" font-size="12" font-family="Fira Code">b</text>
+        <ellipse cx="235" cy="150" rx="14" ry="12" fill="none" stroke="#febc2e" stroke-width="1.5"/>
+        <text x="235" y="154" fill="#febc2e" text-anchor="middle" font-size="12" font-family="Fira Code">c</text>
+        <line x1="170" y1="90" x2="126" y2="138" stroke="#cdd6f4" stroke-width="1" marker-end="url(#tarr)"/>
+        <line x1="180" y1="92" x2="180" y2="138" stroke="#cdd6f4" stroke-width="1" marker-end="url(#tarr)"/>
+        <line x1="190" y1="90" x2="228" y2="138" stroke="#cdd6f4" stroke-width="1" marker-end="url(#tarr)"/>
+        <!-- A (inner) → b -->
+        <ellipse cx="120" cy="200" rx="14" ry="12" fill="none" stroke="#febc2e" stroke-width="1.5"/>
+        <text x="120" y="204" fill="#febc2e" text-anchor="middle" font-size="12" font-family="Fira Code">a</text>
+        <line x1="120" y1="162" x2="120" y2="188" stroke="#cdd6f4" stroke-width="1" marker-end="url(#tarr)"/>
+        <!-- B → d -->
+        <ellipse cx="320" cy="150" rx="14" ry="12" fill="none" stroke="#febc2e" stroke-width="1.5"/>
+        <text x="320" y="154" fill="#febc2e" text-anchor="middle" font-size="12" font-family="Fira Code">d</text>
+        <line x1="320" y1="92" x2="320" y2="138" stroke="#cdd6f4" stroke-width="1" marker-end="url(#tarr)"/>
+        <!-- legend -->
+        <circle cx="340" cy="190" r="6" fill="none" stroke="#a5d6a7" stroke-width="1.5"/>
+        <text x="350" y="194" fill="#a5d6a7" font-size="10" font-family="Fira Code">= Nonterminal</text>
+        <circle cx="340" cy="208" r="6" fill="none" stroke="#febc2e" stroke-width="1.5"/>
+        <text x="350" y="212" fill="#febc2e" font-size="10" font-family="Fira Code">= Terminal</text>
+      </svg>
+    </div>
+
+  </div>
+  <div class="card-footer"><span>CSC 427 · AAUA</span><strong>APEXHUB</strong></div>
+</div>
+
+<!-- ══ CH6: PARSING TECHNIQUES ══ -->
+<div class="page-card" id="ch6">
+  <div class="topic-banner">
+    <div class="topic-num">6</div>
+    <div>
+      <div class="topic-title">Parsing Techniques</div>
+      <span class="topic-sub">Top-Down · Bottom-Up · Backtracking · Issues in CFG Parsing</span>
+    </div>
+    <div class="page-pill">Topic 6</div>
+  </div>
+  <div class="card-body">
+
+    <div class="section-h">6.1 Classification of Parsers</div>
+    <p>There are two major types of parsing: <strong>top-down</strong> and <strong>bottom-up</strong>.</p>
+
+    <div style="background:var(--code-bg);border-radius:10px;padding:14px;margin:14px 0;font-family:'Fira Code',monospace;font-size:11px;color:#cdd6f4;line-height:2.2;overflow-x:auto;">
+<pre style="background:transparent;padding:0;">PARSERS
+├── Top-Down Parsers
+│   ├── With Backtracking
+│   │   └── Brute Forcing
+│   └── Without Backtracking
+│       ├── Recursive Descent Parsers
+│       └── Predictive Parsers
+│           ├── LL(1)
+│           └── LL(k)
+└── Bottom-Up Parsers
+    ├── Operator Precedence Parsers
+    └── LR Parsers
+        ├── LR(0)
+        ├── SLR(1)
+        ├── LALR(1)
+        └── CLR(1)</pre>
+    </div>
+
+    <div class="section-h">6.2 Top-Down Parsing</div>
+    <p><strong>Definition:</strong> Top-down parsers expand non-terminals to match incoming tokens and directly construct a derivation (they construct derivations and parse trees from the <strong>root to the leaves</strong>). Start at the start symbol and apply productions to work towards the terminal symbols.</p>
+    <div class="box box-yellow"><div class="box-title">🗣️ Plain English</div>Like reading a recipe from the title down. You start with "Make Jollof Rice" (start symbol) and keep breaking it down: "Make Jollof Rice" → "Wash rice + Cook sauce + Combine" → "Get 2 cups rice + water + ..." until you reach the actual ingredients (terminals).</div>
+
+    <div class="section-h">6.3 Bottom-Up Parsing</div>
+    <p><strong>Definition:</strong> Bottom-up parsers attempt to match an input with the right-hand sides of grammar rules. When a match occurs, the right-hand side is replaced (reduced) to the nonterminal on the left. So they construct derivations and parse trees from the <strong>leaves to the root</strong>.</p>
+    <div class="box box-blue"><div class="box-title">💡 Plain English</div>Like assembling a puzzle bottom-up — you start with individual pieces (tokens from the input) and figure out which group of pieces forms a smaller picture (production rule), then combine groups into bigger pictures until you have the full picture (start symbol).</div>
+
+    <div class="section-h">6.4 Side-by-Side Derivation Example</div>
+    <p>Grammar: S → AB, A → aA | ε, B → b | bB — Derive <strong>aaab</strong></p>
+    <div class="parse-demo">
+      <div class="parse-side">
+        <div class="parse-side-title">⬇ TOP-DOWN (Leftmost Derivation)</div>
+        <div class="parse-steps">
+          <div class="parse-step-row"><span class="ps-lhs">S</span><span class="ps-arr">→</span><span class="ps-rhs">AB</span></div>
+          <div class="parse-step-row"><span class="ps-lhs">AB</span><span class="ps-arr">→</span><span class="ps-rhs">aAB</span></div>
+          <div class="parse-step-row"><span class="ps-lhs">aAB</span><span class="ps-arr">→</span><span class="ps-rhs">aaAB</span></div>
+          <div class="parse-step-row"><span class="ps-lhs">aaAB</span><span class="ps-arr">→</span><span class="ps-rhs">aaaAB</span></div>
+          <div class="parse-step-row"><span class="ps-lhs">aaaAB</span><span class="ps-arr">→</span><span class="ps-rhs">aaaεB</span></div>
+          <div class="parse-step-row"><span class="ps-lhs">aaaεB</span><span class="ps-arr">→</span><span class="ps-rhs">aaab ✓</span></div>
+        </div>
+        <p style="font-size:11px;color:#a5d6a7;margin-top:8px;">Start at S, expand down to terminals</p>
+      </div>
+      <div class="parse-side">
+        <div class="parse-side-title">⬆ BOTTOM-UP (Rightmost Derivation in Reverse)</div>
+        <div class="parse-steps">
+          <div class="parse-step-row"><span class="ps-lhs">aaab</span><span class="ps-arr">←</span><span class="ps-rhs">aAAb B→b</span></div>
+          <div class="parse-step-row"><span class="ps-lhs">aaAb</span><span class="ps-arr">←</span><span class="ps-rhs">aAb  A→aA</span></div>
+          <div class="parse-step-row"><span class="ps-lhs">aAb</span><span class="ps-arr">←</span><span class="ps-rhs">Ab   A→aA</span></div>
+          <div class="parse-step-row"><span class="ps-lhs">Ab</span><span class="ps-arr">←</span><span class="ps-rhs">AB   A→ε</span></div>
+          <div class="parse-step-row"><span class="ps-lhs">AB</span><span class="ps-arr">←</span><span class="ps-rhs">S  S→AB</span></div>
+          <div class="parse-step-row"><span class="ps-lhs">S ✓</span><span class="ps-arr"></span><span class="ps-rhs">done!</span></div>
+        </div>
+        <p style="font-size:11px;color:#90caf9;margin-top:8px;">Start at leaves (tokens), reduce up to S</p>
+      </div>
+    </div>
+
+    <div class="section-h">6.5 Backtracking</div>
+    <p><strong>Definition:</strong> Backtracking is an approach used in top-down parsing where if one production rule fails to produce the expected string, the parser undoes its choices (backtracks) and tries an alternative production.</p>
+    <p><strong>How Backtracking Works (Example):</strong></p>
+    <p>Grammar: S → aAb, A → cd | ce — parse string <strong>aceb</strong></p>
+    <ol>
+      <li>Try S → aAb: match 'a', now need to expand A</li>
+      <li>Try A → cd: match 'c', then try 'd' but input has 'e' — <strong>FAIL, backtrack</strong></li>
+      <li>Back to A, try A → ce: match 'c', match 'e' — SUCCESS</li>
+      <li>Match 'b' — SUCCESS. String aceb is accepted.</li>
+    </ol>
+    <div class="box box-red"><div class="box-title">⚠️ Limitation of Backtracking</div>If the given grammar has more than one alternative for a nonterminal, the cost of backtracking is high. For a grammar with many alternatives, the parser may need to try all of them before finding the correct one — making it exponential in the worst case. That's why predictive parsers (no backtracking) are preferred.</div>
+
+    <div class="section-h">6.6 Issues in Parsing Context-Free Grammars</div>
+    <div class="table-wrap"><table>
+      <tr><th>Issue</th><th>Definition</th><th>Example</th><th>Solution</th></tr>
+      <tr><td><strong>Left Recursion</strong></td><td>A grammar is left-recursive if a nonterminal A can derive a string beginning with A: A → Aα. Top-down parsers go into infinite loops with left recursion.</td><td>A → Aa | b (loops forever in top-down)</td><td>Eliminate left recursion by rewriting: A → bA', A' → aA' | ε</td></tr>
+      <tr><td><strong>Left Factoring</strong></td><td>When two or more productions for the same nonterminal begin with the same symbols, the parser cannot decide which to choose without looking ahead.</td><td>A → αβ | αγ (both start with α)</td><td>Factor out common prefix: A → αA', A' → β | γ</td></tr>
+      <tr><td><strong>Ambiguity</strong></td><td>A grammar is ambiguous if a string can be derived by more than one parse tree. Ambiguous grammars cause parsing issues.</td><td>E → E+E | E*E | id (2+3*4 has two parse trees)</td><td>Rewrite grammar to enforce precedence and associativity</td></tr>
+    </table></div>
+
+    <div class="section-h">6.7 Substitution Example — Identifying and Eliminating Issues</div>
+    <p>Grammar: A → da | acB, B → abB | daA | Af</p>
+    <p><strong>Step 1 — Identify issues:</strong></p>
+    <ul>
+      <li>B → Af — when A is substituted, A → da gives B → daf (OK), A → acB gives B → acBf — this introduces <strong>indirect left recursion</strong> through B → acBf</li>
+    </ul>
+    <p><strong>Step 2 — Substitute A into B:</strong></p>
+    <ul>
+      <li>Replace A in B → Af: using A → da: B → daf; using A → acB: B → acBf</li>
+      <li>Now B → abB | daA | daf | acBf</li>
+    </ul>
+    <p><strong>Step 3 — Identify and eliminate left recursion in B:</strong></p>
+    <ul>
+      <li>B → acBf introduces hidden recursion. Rewrite: group non-recursive terms as B → abB | daA | daf + B' where B' handles acBf</li>
+      <li>Result: B → (abB | daA | daf) B', B' → acBfB' | ε</li>
+    </ul>
+
+  </div>
+  <div class="card-footer"><span>CSC 427 · AAUA</span><strong>APEXHUB</strong></div>
+</div>
+
+<!-- ══ CH7: SEMANTIC ANALYSIS ══ -->
+<div class="page-card" id="ch7">
+  <div class="topic-banner">
+    <div class="topic-num">7</div>
+    <div>
+      <div class="topic-title">Semantic Analysis</div>
+      <span class="topic-sub">Type Checking · Symbol Table · Declarations · Types</span>
+    </div>
+    <div class="page-pill">Topic 7</div>
+  </div>
+  <div class="card-body">
+
+    <div class="section-h">7.1 What is Semantic Analysis?</div>
+    <p><strong>Textbook (Louden):</strong> Semantic analysis is concerned with computing additional information about a program that is beyond what can be expressed in a context-free grammar. The primary purpose is to check for type consistency and determine the meaning of program constructs.</p>
+    <p><strong>Lecturer's Definition:</strong> A semantic analyser takes its input from the syntax analysis phase in the form of a parse tree and a symbol table. Its purpose is to determine if the input has a well-defined meaning; in practice semantic analysers are mainly concerned with <strong>type checking</strong> and <strong>type coercion</strong> based on type rules.</p>
+
+    <div class="box box-yellow">
+      <div class="box-title">🗣️ Plain English</div>
+      Lexical analysis checks spelling of words. Syntax analysis checks grammar of sentences. Semantic analysis checks MEANING. "Colourless green ideas sleep furiously" is grammatically correct but semantically meaningless. Similarly, adding a string to a number is syntactically valid but semantically wrong — the semantic analyser catches this.
+    </div>
+
+    <p>Parsing only verifies that the program consists of tokens in a syntactically valid combination. Semantic analysis identifies the operators and operands of expressions and statements from the hierarchical structure determined by the syntax analysis phase. It checks for:</p>
+    <ul>
+      <li>Type errors</li>
+      <li>Compatibility of operators and operands</li>
+      <li>Undefined variables</li>
+      <li>Index out of bounds</li>
+      <li>Types of arguments to function calls</li>
+    </ul>
+
+    <div class="section-h">7.2 Types and Declarations</div>
+    <p><strong>A type</strong> is a set of values and a set of operations operating on those values.</p>
+    <div class="table-wrap"><table>
+      <tr><th>Type Category</th><th>Description</th><th>Examples</th></tr>
+      <tr><td><strong>Base Types</strong></td><td>Primitive types provided directly by the underlying hardware</td><td>int, float, double, char, bool</td></tr>
+      <tr><td><strong>Compound Types</strong></td><td>Types constructed as aggregations of base types and simple compound types</td><td>arrays, pointers, records, structs, unions, classes</td></tr>
+      <tr><td><strong>Complex Types</strong></td><td>Abstract data types — may or may not have language support</td><td>lists, stacks, queues, trees, heaps, tables</td></tr>
+    </table></div>
+    <p><strong>A declaration</strong> is a statement in a program that communicates to the compiler the name and type of a data object. In many languages it may include modifiers that control visibility and lifetime.</p>
+
+    <div class="section-h">7.3 Type Checking</div>
+    <p><strong>Definition:</strong> Type checking is the process of verifying that each operation executed in a program respects the type system of the language — that all operands in an expression are of appropriate types and number.</p>
+    <div class="table-wrap"><table>
+      <tr><th>Type</th><th>Definition</th><th>Example</th></tr>
+      <tr><td><strong>Static Type Checking</strong></td><td>Done at <strong>compile-time</strong>. Defines restrictions on the structure of valid texts. Checks that identifiers are declared before use and used in appropriate context.</td><td>C, Java — compiler rejects <code>int x; x = "hello";</code></td></tr>
+      <tr><td><strong>Dynamic Type Checking</strong></td><td>Done at <strong>runtime</strong> (execution). Defines how constructs should produce program behaviour. A type error halts execution.</td><td>Python — <code>x = 5; x = "hello"</code> is allowed, type is determined at runtime</td></tr>
+    </table></div>
+
+    <div class="section-h">7.4 Three Formal Methods of Semantic Analysis</div>
+    <ul>
+      <li><strong>Operational Semantics</strong> — Describes the meaning of a program by specifying how statements are executed on an abstract machine (step by step)</li>
+      <li><strong>Denotational Semantics</strong> — Describes meaning by mapping programs to mathematical objects (functions). Meaning is denoted mathematically.</li>
+      <li><strong>Axiomatic Semantics</strong> — Based on formal logic. Describes meaning of programs using logical assertions (preconditions and postconditions). Used in program verification.</li>
+    </ul>
+
+  </div>
+  <div class="card-footer"><span>CSC 427 · AAUA</span><strong>APEXHUB</strong></div>
+</div>
+
+<!-- ══ CH8: CODE OPTIMIZATION & GENERATION ══ -->
+<div class="page-card" id="ch8">
+  <div class="topic-banner">
+    <div class="topic-num">8</div>
+    <div>
+      <div class="topic-title">Intermediate Code, Optimization & Code Generation</div>
+      <span class="topic-sub">TAC · Optimization Types · Code Generation</span>
+    </div>
+    <div class="page-pill">Topic 8</div>
+  </div>
+  <div class="card-body">
+
+    <div class="section-h">8.1 Intermediate Code Generation</div>
+    <p>After the analysis phases are completed, the source program is decomposed into a symbol table and a parse tree. From this, the compiler generates <strong>intermediate code</strong> according to one of two approaches:</p>
+    <ol>
+      <li>Generate code for a <strong>specific machine</strong>, or</li>
+      <li>Generate code for a <strong>'general' or abstract machine</strong>, then use further translators to convert to specific machine code — this approach is more modular and efficient</li>
+    </ol>
+    <p>The most widely used intermediate language is <strong>Three-Address Code (TAC)</strong> — a sequence of optionally labelled instructions where each instruction has at most three addresses (two operands and one result).</p>
+    <div class="code-wrap"><div class="code-label"><span class="dot dot-r"></span><span class="dot dot-y"></span><span class="dot dot-g"></span><span>Three-Address Code Example for: k = i + j</span></div>
+    <pre>t1 = i + j       ; compute i + j, store in temp t1
+k  = t1          ; assign result to k</pre></div>
+
+    <div class="section-h">8.2 Code Optimization</div>
+    <p><strong>Textbook (Louden):</strong> An optimizer attempts to improve the time and space requirements of a program. Optimization is a program transformation technique which tries to improve the code by making it consume less resources (CPU, memory) and deliver high speed.</p>
+    <p><strong>Three Rules a Code Optimizer Must Follow:</strong></p>
+    <ol>
+      <li>The output code must not, in any way, <strong>change the meaning</strong> of the program</li>
+      <li>Optimization should <strong>increase the speed</strong> of the program and if possible, demand less resources</li>
+      <li>Optimization should itself be <strong>fast</strong> and not delay the overall compiling process</li>
+    </ol>
+    <div class="table-wrap"><table>
+      <tr><th>Optimization Type</th><th>Description</th></tr>
+      <tr><td><strong>Peephole Optimization</strong></td><td>Operates on target assembly — considers a few instructions at a time (through a "peephole") and makes simple machine-dependent improvements. E.g. eliminating multiplication by 1, removing redundant loads.</td></tr>
+      <tr><td><strong>Local Optimization</strong></td><td>Performed by looking only at the statements in a basic block. Requires little analysis. Examples: constant folding, dead code elimination.</td></tr>
+      <tr><td><strong>Global Optimization</strong></td><td>Applies optimizations across basic blocks using data-flow analysis. More complex. Also called "intraprocedural methods".</td></tr>
+      <tr><td><strong>Loop Optimization</strong></td><td>Acts on statements making up a loop (e.g. loop invariant code motion). Significant impact — many programs spend most time in loops.</td></tr>
+      <tr><td><strong>Machine-Independent</strong></td><td>Compiler transforms intermediate code without involving CPU registers or absolute memory locations</td></tr>
+      <tr><td><strong>Machine-Dependent</strong></td><td>Done after target code generated. Involves CPU registers. Takes maximum advantage of memory hierarchy.</td></tr>
+    </table></div>
+    <div class="box box-yellow"><div class="box-title">🗣️ Plain English</div>Optimization is like editing a first draft of an essay. You find redundant sentences (remove them), combine short sentences (reduce code), and rearrange paragraphs for better flow — but the essay still says the SAME THING. The meaning never changes, just the efficiency.</div>
+
+    <div class="section-h">8.3 Code Generation</div>
+    <p>The final phase of the compiler generates code for a specific machine. In this phase the compiler considers:</p>
+    <ul>
+      <li><strong>Memory management</strong> — allocating variables and data structures in memory</li>
+      <li><strong>Register assignment</strong> — deciding which values to keep in CPU registers for speed</li>
+      <li><strong>Machine-specific optimisation</strong> — exploiting special CPU instructions</li>
+    </ul>
+    <p>The output from this phase is usually <strong>assembly language</strong> or <strong>relocatable machine code</strong>.</p>
+
+  </div>
+  <div class="card-footer"><span>CSC 427 · AAUA</span><strong>APEXHUB</strong></div>
+</div>
+
+<!-- ══ PAST QUESTIONS ══ -->
+<div class="page-card" id="pastq">
+  <div class="topic-banner">
+    <div class="topic-num">📝</div>
+    <div>
+      <div class="topic-title">Past Examination Questions & Model Answers</div>
+      <span class="topic-sub">AAUA CSC 427 · Compiler Design I · Date: 11/3/2025 · Answer Q1 + Any Other 3</span>
+    </div>
+    <div class="page-pill">Exam Prep</div>
+  </div>
+  <div class="card-body">
+    <div class="box box-red"><div class="box-title">⚠️ Exam Format</div>Course: Compiler Design I (CSC 427) · Unit: 3 · Core · Time: 2 HRS · Instruction: Attempt Question 1 AND Any Other Three (3) Questions</div>
+
+    <!-- Q1 -->
+    <div class="section-h">Question 1 — 25 Marks (COMPULSORY)</div>
+    <p><em>Given program input to lexical analysis:</em></p>
+    <div class="code-wrap"><div class="code-label"><span class="dot dot-r"></span><span class="dot dot-y"></span><span class="dot dot-g"></span><span>Source Program</span></div><pre>main ()
+{
+    Int i = 20, j = 30, k;
+    k = i + j;
+    if (k>=50);
+    {
+        printf ("hello");
+    }
+}</pre></div>
+
+    <div class="toggle-section open">
+      <div class="toggle-header" onclick="toggleSec(this)"><span>Q1(a). Write out the output generated by the lexical analysis phase <span class="chip chip-yellow">marks</span></span><span class="toggle-arrow">▼</span></div>
+      <div class="toggle-content">
+        <p>The lexical analyser reads the source code and produces the following token stream:</p>
+        <div class="table-wrap"><table>
+          <tr><th>Lexeme</th><th>Token Type</th><th>Description</th></tr>
+          <tr><td><code>main</code></td><td>id(main)</td><td>Identifier</td></tr>
+          <tr><td><code>(</code></td><td>lparen</td><td>Left parenthesis</td></tr>
+          <tr><td><code>)</code></td><td>rparen</td><td>Right parenthesis</td></tr>
+          <tr><td><code>{</code></td><td>lbrace</td><td>Left brace</td></tr>
+          <tr><td><code>Int</code></td><td>keyword(Int)</td><td>Keyword (type declaration)</td></tr>
+          <tr><td><code>i</code></td><td>id(i)</td><td>Identifier</td></tr>
+          <tr><td><code>=</code></td><td>assign(=)</td><td>Assignment operator</td></tr>
+          <tr><td><code>20</code></td><td>int(20)</td><td>Integer literal</td></tr>
+          <tr><td><code>,</code></td><td>comma</td><td>Comma separator</td></tr>
+          <tr><td><code>j</code></td><td>id(j)</td><td>Identifier</td></tr>
+          <tr><td><code>=</code></td><td>assign(=)</td><td>Assignment operator</td></tr>
+          <tr><td><code>30</code></td><td>int(30)</td><td>Integer literal</td></tr>
+          <tr><td><code>,</code></td><td>comma</td><td>Comma separator</td></tr>
+          <tr><td><code>k</code></td><td>id(k)</td><td>Identifier</td></tr>
+          <tr><td><code>;</code></td><td>semicolon</td><td>Statement terminator</td></tr>
+          <tr><td><code>k</code></td><td>id(k)</td><td>Identifier</td></tr>
+          <tr><td><code>=</code></td><td>assign(=)</td><td>Assignment operator</td></tr>
+          <tr><td><code>i</code></td><td>id(i)</td><td>Identifier</td></tr>
+          <tr><td><code>+</code></td><td>arithop(+)</td><td>Arithmetic operator</td></tr>
+          <tr><td><code>j</code></td><td>id(j)</td><td>Identifier</td></tr>
+          <tr><td><code>;</code></td><td>semicolon</td><td>Statement terminator</td></tr>
+          <tr><td><code>if</code></td><td>keyword(if)</td><td>Keyword</td></tr>
+          <tr><td><code>(</code></td><td>lparen</td><td>Left parenthesis</td></tr>
+          <tr><td><code>k</code></td><td>id(k)</td><td>Identifier</td></tr>
+          <tr><td><code>>=</code></td><td>relop(>=)</td><td>Relational operator</td></tr>
+          <tr><td><code>50</code></td><td>int(50)</td><td>Integer literal</td></tr>
+          <tr><td><code>)</code></td><td>rparen</td><td>Right parenthesis</td></tr>
+          <tr><td><code>printf</code></td><td>id(printf)</td><td>Identifier (built-in function)</td></tr>
+          <tr><td><code>"hello"</code></td><td>string("hello")</td><td>String literal</td></tr>
+          <tr><td><code>}</code></td><td>rbrace</td><td>Right brace (×2)</td></tr>
+        </table></div>
+        <div class="box box-green"><div class="box-title">✅ Note</div>Whitespace (spaces, newlines, tabs) is stripped and NOT returned as tokens. Identifiers are entered into the symbol table when first encountered.</div>
+      </div>
+    </div>
+
+    <div class="toggle-section open">
+      <div class="toggle-header" onclick="toggleSec(this)"><span>Q1(b). When it encounters identifiers, how does it handle them?</span><span class="toggle-arrow">▼</span></div>
+      <div class="toggle-content">
+        <p>When the lexical analyser encounters an identifier (e.g., <code>i</code>, <code>j</code>, <code>k</code>, <code>main</code>, <code>printf</code>):</p>
+        <ol>
+          <li>The lexer reads the character sequence that matches the identifier pattern: a <strong>letter followed by zero or more letters or digits</strong></li>
+          <li>It checks the <strong>symbol table</strong> to see if this identifier was previously recorded</li>
+          <li>If the identifier <strong>does NOT exist</strong> in the symbol table: a new entry is created with the identifier's name, leaving its attributes (type, scope, value) to be filled in later by syntax/semantic analysis</li>
+          <li>If the identifier <strong>DOES exist</strong>: the existing symbol table entry is retrieved (no duplicate created)</li>
+          <li>The lexer returns a <strong>token of type <code>id</code></strong> along with a pointer/reference to the symbol table entry as the token's value</li>
+          <li>This pointer is what allows subsequent compiler phases to access information about the identifier</li>
+        </ol>
+        <div class="box box-blue"><div class="box-title">💡 Why this matters</div>Identifiers cannot be turned into machine code directly — the compiler needs to know their type, memory location, and scope first. The symbol table is where all this information is collected across phases.</div>
+      </div>
+    </div>
+
+    <div class="toggle-section">
+      <div class="toggle-header" onclick="toggleSec(this)"><span>Q1(c). How many indecomposable units (tokens) are in the code?</span><span class="toggle-arrow">▼</span></div>
+      <div class="toggle-content">
+        <p>An <strong>indecomposable unit</strong> in the context of lexical analysis is a <strong>token</strong> — the smallest unit of meaning that cannot be broken down further.</p>
+        <p>Counting tokens from the source code above (excluding whitespace and comments):</p>
+        <p>main (1) + ( (2) + ) (3) + { (4) + Int (5) + i (6) + = (7) + 20 (8) + , (9) + j (10) + = (11) + 30 (12) + , (13) + k (14) + ; (15) + k (16) + = (17) + i (18) + + (19) + j (20) + ; (21) + if (22) + ( (23) + k (24) + >= (25) + 50 (26) + ) (27) + ; (28) + { (29) + printf (30) + ( (31) + "hello" (32) + ) (33) + ; (34) + } (35) + } (36)</p>
+        <p><strong>Total = approximately 36 indecomposable token units</strong> (exact count depends on whether repeated tokens like multiple <code>}</code> are counted separately).</p>
+        <p>Token <strong>categories/types</strong> present: Keywords (Int, if), Identifiers (main, i, j, k, printf), Integer literals (20, 30, 50), String literal ("hello"), Operators (=, +, >=), Punctuation ( (, ), {, }, ;, , )</p>
+      </div>
+    </div>
+
+    <div class="toggle-section">
+      <div class="toggle-header" onclick="toggleSec(this)"><span>Q1(d). Write specification (RE) for any of the units identified in (c)</span><span class="toggle-arrow">▼</span></div>
+      <div class="toggle-content">
+        <div class="table-wrap"><table>
+          <tr><th>Token</th><th>Regular Expression</th><th>Explanation</th></tr>
+          <tr><td><strong>Identifier</strong></td><td><code>letter (letter | digit)*</code></td><td>Starts with a letter, followed by zero or more letters or digits</td></tr>
+          <tr><td><strong>Integer Literal</strong></td><td><code>digit digit*</code> or <code>digit+</code></td><td>One or more digits</td></tr>
+          <tr><td><strong>Keyword (Int)</strong></td><td><code>I n t</code></td><td>Exact sequence of characters I, n, t</td></tr>
+          <tr><td><strong>Relational Operator</strong></td><td><code>&lt; | &gt; | = | &lt;= | &gt;= | !=</code></td><td>Any one of the comparison operators</td></tr>
+          <tr><td><strong>Arithmetic Operator</strong></td><td><code>+ | - | * | /</code></td><td>Any one of the arithmetic operators</td></tr>
+          <tr><td><strong>String Literal</strong></td><td><code>" (any character except ")* "</code></td><td>Double quote, any chars, closing double quote</td></tr>
+        </table></div>
+        <p>Where: <strong>letter</strong> = [a-zA-Z], <strong>digit</strong> = [0-9]</p>
+      </div>
+    </div>
+
+    <div class="toggle-section">
+      <div class="toggle-header" onclick="toggleSec(this)"><span>Q1(e). State five (5) responsibilities of a lexical analysis phase</span><span class="toggle-arrow">▼</span></div>
+      <div class="toggle-content">
+        <ol>
+          <li><strong>Tokenization</strong> — Reading the source character stream and grouping characters into meaningful tokens (keywords, identifiers, literals, operators, punctuation symbols)</li>
+          <li><strong>Whitespace and Comment Removal</strong> — Stripping out spaces, tabs, newlines and comments, which carry no semantic meaning and are not passed to the syntax analyser</li>
+          <li><strong>Symbol Table Population</strong> — When an identifier is encountered for the first time, the lexer enters it into the symbol table. This stores the identifier's name and provides a reference for future compiler phases</li>
+          <li><strong>Lexical Error Detection and Reporting</strong> — Detecting and reporting invalid character sequences (lexical errors), such as an invalid character (\$), an incomplete string literal, or a malformed number</li>
+          <li><strong>Line and Column Tracking</strong> — Keeping track of source file line numbers and column positions so that error messages produced by the compiler (in any phase) can accurately reference their location in the original source code</li>
+        </ol>
+      </div>
+    </div>
+
+    <hr class="sub-sep">
+    <div class="section-h">Question 2 — 15 Marks</div>
+
+    <div class="toggle-section">
+      <div class="toggle-header" onclick="toggleSec(this)"><span>Q2(a). Define tokens using RE and create finite automaton to recognize any one of them</span><span class="toggle-arrow">▼</span></div>
+      <div class="toggle-content">
+        <p><strong>Token Definitions using Regular Expressions:</strong></p>
+        <div class="table-wrap"><table>
+          <tr><th>Token Name</th><th>RE</th></tr>
+          <tr><td>identifier</td><td><code>letter(letter|digit)*</code></td></tr>
+          <tr><td>integer</td><td><code>digit+</code></td></tr>
+          <tr><td>float</td><td><code>digit+.digit+</code></td></tr>
+          <tr><td>keyword</td><td><code>if | else | while | int | float</code></td></tr>
+          <tr><td>relop</td><td><code>&lt; | &gt; | &lt;= | &gt;= | == | !=</code></td></tr>
+        </table></div>
+        <p><strong>Finite Automaton for Identifier: letter(letter|digit)*</strong></p>
+        <p>States: q₀ (start), q₁ (accepting), q₂ (error)</p>
+        <ul>
+          <li>q₀ on letter → q₁ (first character is a letter — valid start)</li>
+          <li>q₁ on letter → q₁ (continue reading letters — stay in accepting state)</li>
+          <li>q₁ on digit → q₁ (continue reading digits after first letter — valid)</li>
+          <li>q₀ on digit → q₂ (identifier can't start with a digit — error)</li>
+          <li>q₁ on other → token complete, return id token</li>
+        </ul>
+        <p>q₁ is a double-circled accepting state — whenever we are in q₁ and the next character is no longer letter/digit, we have successfully recognized an identifier.</p>
+      </div>
+    </div>
+
+    <div class="toggle-section">
+      <div class="toggle-header" onclick="toggleSec(this)"><span>Q2(b). Transform the RE into a Finite State Machine: (i) a*((bb)⁺ + bc*) &nbsp; (ii) ((a*|b)cd)*</span><span class="toggle-arrow">▼</span></div>
+      <div class="toggle-content">
+        <p><strong>(i) a*((bb)⁺ + bc*)</strong></p>
+        <p>Breakdown: <code>a*</code> = zero or more a's. <code>(bb)⁺</code> = one or more pairs of bb. <code>bc*</code> = b followed by zero or more c's. The full RE matches either path after the a's.</p>
+        <p><strong>FSM Construction:</strong></p>
+        <p>States: q₀→q₁→q₂ (path for bb+) and q₀→q₃ (path for bc*)</p>
+        <ul>
+          <li>q₀: start state, read a's (self-loop on a)</li>
+          <li>q₀ on b → q₁ (begin (bb)⁺ path) or q₃ (begin bc* path) — NFA has ε-choice here</li>
+          <li>q₁ on b → q₂ (completed first bb)</li>
+          <li>q₂ on b → q₁ (loop for additional bb pairs — this gives (bb)⁺)</li>
+          <li>q₂ = accepting state (one or more bb completed)</li>
+          <li>q₃: after first b, read c's (self-loop on c), q₃ is also accepting (bc* matched)</li>
+        </ul>
+        <p><strong>(ii) ((a*|b)cd)*</strong></p>
+        <p>Breakdown: <code>(a*|b)</code> = either zero-or-more a's, OR a single b. Then <code>cd</code> = literal c then d. The whole thing <code>*</code> = zero or more times.</p>
+        <p><strong>FSM Construction:</strong></p>
+        <ul>
+          <li>q₀: start/accepting (Kleene star allows zero repetitions)</li>
+          <li>q₀ on a → q₁ (reading a's) or q₀ on b → q₂</li>
+          <li>q₁ on a → q₁ (more a's), q₁ on c → q₃</li>
+          <li>q₂ on c → q₃</li>
+          <li>q₃ on d → q₀ (completed one (a*|b)cd, loop back)</li>
+          <li>q₀ is both start and accepting (handles zero repetitions of the group)</li>
+        </ul>
+      </div>
+    </div>
+
+    <hr class="sub-sep">
+    <div class="section-h">Question 3 — 15 Marks</div>
+    <div class="toggle-section open">
+      <div class="toggle-header" onclick="toggleSec(this)"><span>Q3(a). Define: delimiter, loader, linker, relocatable code, lexeme, literal</span><span class="toggle-arrow">▼</span></div>
+      <div class="toggle-content">
+        <div class="table-wrap"><table>
+          <tr><th>Term</th><th>Definition</th></tr>
+          <tr><td><strong>Delimiter</strong></td><td>A character or sequence of characters that marks the boundary between tokens or program units. In C/C++, delimiters include semicolons (;), commas (,), braces ({, }), and parentheses. They separate or terminate syntactic constructs.</td></tr>
+          <tr><td><strong>Loader</strong></td><td>A system program that loads an executable file into memory for execution. It calculates appropriate absolute addresses for memory locations (which are stored as relative in relocatable code) and adjusts the code to use these actual addresses before execution begins.</td></tr>
+          <tr><td><strong>Linker</strong></td><td>A program that combines multiple object code files (produced by compiling/assembling separate source files) along with library routines into a single executable. It resolves symbolic references between object files — connecting a function call in one file to its definition in another.</td></tr>
+          <tr><td><strong>Relocatable Code</strong></td><td>Machine code in which memory references are expressed relative to an undetermined starting address rather than fixed absolute addresses. This allows the code to be loaded and executed at any location in memory. Produced by assemblers and compilers before linking and loading.</td></tr>
+          <tr><td><strong>Lexeme</strong></td><td>An instance of a token — the actual sequence of characters from the source code that matches a token pattern. For example, the lexeme <code>if</code> matches the keyword token pattern <code>if</code>. It is the concrete character string, while the token is the abstract category.</td></tr>
+          <tr><td><strong>Literal</strong></td><td>A constant value that appears directly in source code — it has a fixed, directly-specified value. Examples: the integer literal <code>42</code>, the string literal <code>"hello"</code>, the floating point literal <code>3.14</code>, the boolean literal <code>true</code>.</td></tr>
+        </table></div>
+      </div>
+    </div>
+
+    <div class="toggle-section open">
+      <div class="toggle-header" onclick="toggleSec(this)"><span>Q3(b). Explain the phases of a compiler design</span><span class="toggle-arrow">▼</span></div>
+      <div class="toggle-content">
+        <p>The process of compilation is split into <strong>six phases</strong>, each interacting with a symbol table manager and an error handler:</p>
+        <ol>
+          <li><strong>Lexical Analysis (Scanner):</strong> Reads the source program character by character and groups characters into tokens. Strips whitespace and comments. Enters identifiers into the symbol table. Output: a stream of tokens.</li>
+          <li><strong>Syntax Analysis (Parser):</strong> Takes the token stream and checks that tokens are arranged in a grammatically correct structure according to the language's context-free grammar. Builds a parse tree (syntax tree). Output: a parse tree.</li>
+          <li><strong>Semantic Analysis:</strong> Checks the parse tree for semantic correctness — primarily type checking. Verifies that operators are applied to compatible operands, variables are declared before use, and function arguments match parameter types. Output: annotated parse tree.</li>
+          <li><strong>Intermediate Code Generation:</strong> Translates the annotated parse tree into an intermediate representation (such as Three-Address Code). This form is machine-independent and easier to optimize. Output: intermediate code.</li>
+          <li><strong>Code Optimization:</strong> Improves the intermediate code to run faster and use less memory, while preserving the program's meaning. Common optimizations: removing dead code, loop optimization, constant folding. Output: optimized intermediate code.</li>
+          <li><strong>Code Generation:</strong> Translates the optimized intermediate code into target machine code (or assembly language). Handles register allocation, memory management, and machine-specific optimizations. Output: assembly/machine code.</li>
+        </ol>
+        <p>Additionally: <strong>Symbol Table Management</strong> and <strong>Error Handling</strong> interact with all six phases throughout the process.</p>
+      </div>
+    </div>
+
+    <hr class="sub-sep">
+    <div class="section-h">Question 4 — 15 Marks</div>
+    <div class="toggle-section open">
+      <div class="toggle-header" onclick="toggleSec(this)"><span>Q4(a). What is a parser? Generate parse tree for "aabcde" from S → aABe, A → Abc | b, B → d. Differentiate strategies.</span><span class="toggle-arrow">▼</span></div>
+      <div class="toggle-content">
+        <p><strong>What is a Parser?</strong></p>
+        <p>A parser is a compiler component that takes a sequence of tokens (from the lexer) and determines its grammatical structure according to the language's context-free grammar. It builds a parse tree — a hierarchical tree representation of the derivation of the input string from the grammar's start symbol. If the input does not conform to the grammar, the parser reports a syntax error.</p>
+        <p><strong>Generating Parse Tree for string "aabcde" from:</strong> S → aABe, A → Abc | b, B → d</p>
+        <p>Using <strong>top-down (leftmost) derivation</strong>:</p>
+        <ol>
+          <li>S → aABe (apply S → aABe)</li>
+          <li>aABe → aAbcBe (apply A → Abc to leftmost A)</li>
+          <li>aAbcBe → aabcBe (apply A → b to inner A)</li>
+          <li>aabcBe → aabcde (apply B → d)</li>
+          <li>Result: <strong>aabcde ✓</strong></li>
+        </ol>
+        <p><em>(See parse tree SVG diagram in Topic 5 above)</em></p>
+        <p><strong>Differentiation Between Top-Down and Bottom-Up Strategies:</strong></p>
+        <div class="table-wrap"><table>
+          <tr><th>Feature</th><th>Top-Down</th><th>Bottom-Up</th></tr>
+          <tr><td>Starting point</td><td>Start symbol (root)</td><td>Input tokens (leaves)</td></tr>
+          <tr><td>Direction</td><td>Root → Leaves (expansion)</td><td>Leaves → Root (reduction)</td></tr>
+          <tr><td>Operation</td><td>Expands nonterminals by applying productions</td><td>Reduces substrings to nonterminals when a production matches</td></tr>
+          <tr><td>Derivation type</td><td>Leftmost derivation</td><td>Rightmost derivation in reverse</td></tr>
+          <tr><td>Parser examples</td><td>Recursive descent, LL(1), Predictive parsers</td><td>LR(0), SLR(1), LALR(1), CLR(1)</td></tr>
+          <tr><td>Grammar handled</td><td>LL grammars (left-to-right, leftmost)</td><td>LR grammars (left-to-right, rightmost) — more powerful</td></tr>
+        </table></div>
+      </div>
+    </div>
+
+    <div class="toggle-section">
+      <div class="toggle-header" onclick="toggleSec(this)"><span>Q4(b). Backtracking approach to parse "aceb" from S → aAb, A → cd | ce</span><span class="toggle-arrow">▼</span></div>
+      <div class="toggle-content">
+        <p><strong>Backtracking</strong> is the top-down strategy where if a chosen production fails, the parser undoes and tries the next alternative.</p>
+        <p><strong>Parsing "aceb" from S → aAb, A → cd | ce:</strong></p>
+        <ol>
+          <li><strong>Apply S → aAb:</strong> Match input[0]='a' with 'a' — SUCCESS. Now need to match A against remaining "ceb".</li>
+          <li><strong>Try A → cd:</strong> Match 'c' against input[1]='c' — SUCCESS. Match 'd' against input[2]='e' — <strong>FAIL</strong> ('d' ≠ 'e'). <em>Backtrack to A.</em></li>
+          <li><strong>Try A → ce:</strong> Match 'c' against input[1]='c' — SUCCESS. Match 'e' against input[2]='e' — SUCCESS. A has been matched.</li>
+          <li><strong>Back in S → aAb:</strong> Match 'b' against input[3]='b' — SUCCESS.</li>
+          <li>All input consumed. <strong>String "aceb" is ACCEPTED.</strong></li>
+        </ol>
+        <div class="box box-red"><div class="box-title">⚠️ Backtracking Cost</div>Backtracking requires re-scanning already-consumed input. For grammars with many alternatives, the cost grows exponentially. This is why LL(1) parsers (which look one token ahead to choose the correct production without backtracking) are preferred for practical use.</div>
+      </div>
+    </div>
+
+    <hr class="sub-sep">
+    <div class="section-h">Question 5 — 15 Marks</div>
+    <div class="toggle-section">
+      <div class="toggle-header" onclick="toggleSec(this)"><span>Q5(a). Discuss the issues in parsing context free grammar</span><span class="toggle-arrow">▼</span></div>
+      <div class="toggle-content">
+        <p>The main issues encountered when parsing context-free grammars are:</p>
+        <ol>
+          <li><strong>Left Recursion:</strong> A grammar is left-recursive if a nonterminal A can derive a string starting with itself: A ⟹* Aα. Top-down parsers get into infinite loops with left-recursive grammars because they keep trying to expand A by applying A → Aα, producing another A to expand.
+          <br><em>Solution:</em> Eliminate left recursion by rewriting: if A → Aα | β, rewrite as A → βA', A' → αA' | ε</li>
+          <li><strong>Left Factoring:</strong> Occurs when two or more productions for the same nonterminal share a common prefix. The parser cannot decide which production to use without knowing more of the input.
+          <br>Example: A → αβ₁ | αβ₂ — the common α must be "factored out."
+          <br><em>Solution:</em> A → αA', A' → β₁ | β₂</li>
+          <li><strong>Ambiguity:</strong> A grammar is ambiguous if a single string can be derived in two or more different ways (producing different parse trees). Ambiguity causes issues because the compiler cannot determine the unique intended structure.
+          <br>Example: E → E+E | E*E | id produces two trees for "id+id*id" depending on operator precedence.
+          <br><em>Solution:</em> Rewrite grammar with explicit precedence rules.</li>
+          <li><strong>Empty Productions (ε-productions):</strong> Productions of the form A → ε can complicate parsing algorithms, particularly in computing FIRST and FOLLOW sets for LL(1) parsers.</li>
+          <li><strong>Indirect Left Recursion:</strong> Occurs when A ⟹* Aα through a series of productions (not directly). Harder to detect and eliminate.</li>
+        </ol>
+      </div>
+    </div>
+
+    <div class="toggle-section">
+      <div class="toggle-header" onclick="toggleSec(this)"><span>Q5(b). Show issues in A → da | acB, B → abB | daA | Af and eliminate them</span><span class="toggle-arrow">▼</span></div>
+      <div class="toggle-content">
+        <p><strong>Given grammar:</strong> A → da | acB &nbsp;&nbsp; B → abB | daA | Af</p>
+        <p><strong>Step 1 — Identify the issues:</strong></p>
+        <p>Looking at B → Af: This production has A on the right-hand side. When A is substituted, A can derive acB (which starts with a), and acB then appears in B's production — this creates <strong>indirect left recursion</strong> because B can eventually derive strings that lead back to B.</p>
+        <ul>
+          <li>B → Af → (da | acB)f → daf | acBf</li>
+          <li>B → acBf introduces: B derives a string containing B — <strong>indirect left recursion through substitution</strong></li>
+        </ul>
+        <p><strong>Step 2 — Substitute A into B → Af:</strong></p>
+        <p>Replace B → Af using A → da and A → acB:</p>
+        <ul>
+          <li>From A → da: B → daf</li>
+          <li>From A → acB: B → acBf</li>
+        </ul>
+        <p>Updated grammar for B: <strong>B → abB | daA | daf | acBf</strong></p>
+        <p><strong>Step 3 — Identify left recursion in updated B:</strong></p>
+        <p>B → acBf — this is not direct left recursion (doesn't start with B), but B appears inside, making it right-recursive with a trailing f. The grammar now generates strings correctly.</p>
+        <p><strong>Step 4 — Check for left-recursion in B:</strong></p>
+        <p>None of the productions start with B, so there is no <strong>direct</strong> left recursion. The indirect recursion from B → Af → acBf has been eliminated by substitution.</p>
+        <p><strong>Final Grammar:</strong></p>
+        <ul>
+          <li>A → da | acB</li>
+          <li>B → abB | daA | daf | acBf</li>
+        </ul>
+        <p>The original issue (B → Af which caused indirect left recursion via A → acB → acBf) has been eliminated by substituting A into the production.</p>
+      </div>
+    </div>
+
+  </div>
+  <div class="card-footer"><span>CSC 427 · Past Questions</span><strong>APEXHUB</strong></div>
+</div>
+
+<!-- ══ LIKELY QUESTIONS ══ -->
+<div class="page-card" id="likelyq">
+  <div class="topic-banner">
+    <div class="topic-num">🎯</div>
+    <div>
+      <div class="topic-title">Likely Exam Questions & Model Answers</div>
+      <span class="topic-sub">APEXHUB Predictions · CSC 427 · Based on Past Patterns & Lecture Coverage</span>
+    </div>
+    <div class="page-pill">Must Study</div>
+  </div>
+  <div class="card-body">
+    <div class="box box-purple"><div class="box-title">📌 APEXHUB EXAM ALERT</div>These questions are predicted from lecture topics and the structure of the past paper. Compilers questions heavily favour lexical analysis (tokens, RE, FA), parsing (top-down vs bottom-up, backtracking, grammar issues), and the phases of compilation. Study these thoroughly.</div>
+
+    <div class="section-h">🔥 Very Likely</div>
+
+    <div class="toggle-section">
+      <div class="toggle-header" onclick="toggleSec(this)"><span>LQ1. Explain all six phases of a compiler with their inputs and outputs. <span class="chip chip-red">Very Likely</span></span><span class="toggle-arrow">▼</span></div>
+      <div class="toggle-content"><p><em>(See Topic 3 and Q3(b) above for full answer — all 6 phases with inputs/outputs)</em></p><p>Key: Lexical → Syntax → Semantic (Analysis) then Intermediate Code → Optimization → Code Gen (Synthesis). Symbol Table and Error Handler interact with all phases.</p></div>
+    </div>
+
+    <div class="toggle-section">
+      <div class="toggle-header" onclick="toggleSec(this)"><span>LQ2. What is a token? Distinguish token, pattern, and lexeme with examples. <span class="chip chip-red">Very Likely</span></span><span class="toggle-arrow">▼</span></div>
+      <div class="toggle-content">
+        <p><strong>Token:</strong> An object with a type and a value, representing a category of lexeme (e.g., keyword, identifier, integer literal, operator).</p>
+        <p><strong>Pattern:</strong> A rule (described using RE) that specifies when a character sequence constitutes a token.</p>
+        <p><strong>Lexeme:</strong> The actual character string from source code that matches a token's pattern — the concrete instance.</p>
+        <div class="table-wrap"><table>
+          <tr><th>Lexeme</th><th>Token</th><th>Pattern</th></tr>
+          <tr><td>if</td><td>keyword(if)</td><td>i, f</td></tr>
+          <tr><td>count</td><td>id(count)</td><td>letter(letter|digit)*</td></tr>
+          <tr><td>42</td><td>int(42)</td><td>digit+</td></tr>
+          <tr><td>>=</td><td>relop(>=)</td><td>&gt;=</td></tr>
+        </table></div>
+      </div>
+    </div>
+
+    <div class="toggle-section">
+      <div class="toggle-header" onclick="toggleSec(this)"><span>LQ3. Define Regular Expressions and write RE specifications for 5 token types. <span class="chip chip-red">Very Likely</span></span><span class="toggle-arrow">▼</span></div>
+      <div class="toggle-content">
+        <p>A Regular Expression is a formal notation for specifying patterns of strings. It defines the language (set of strings) that a token pattern should match.</p>
+        <div class="table-wrap"><table>
+          <tr><th>Token</th><th>RE</th><th>Matches</th></tr>
+          <tr><td>Identifier</td><td><code>letter(letter|digit)*</code></td><td>count, x1, myVar</td></tr>
+          <tr><td>Integer</td><td><code>digit digit*</code></td><td>0, 42, 100</td></tr>
+          <tr><td>Float</td><td><code>digit+.digit+</code></td><td>3.14, 0.5</td></tr>
+          <tr><td>Keyword</td><td><code>if|else|while|int</code></td><td>if, else</td></tr>
+          <tr><td>Arithmetic Op</td><td><code>+|-|*|/</code></td><td>+, -, *, /</td></tr>
+        </table></div>
+      </div>
+    </div>
+
+    <div class="toggle-section">
+      <div class="toggle-header" onclick="toggleSec(this)"><span>LQ4. Differentiate between compiler, assembler, and interpreter. <span class="chip chip-red">Very Likely</span></span><span class="toggle-arrow">▼</span></div>
+      <div class="toggle-content">
+        <div class="table-wrap"><table>
+          <tr><th>Feature</th><th>Compiler</th><th>Assembler</th><th>Interpreter</th></tr>
+          <tr><td>Input</td><td>High-level language (C, Java)</td><td>Assembly language</td><td>High-level language + input data</td></tr>
+          <tr><td>Output</td><td>Machine code or assembly</td><td>Machine code (binary)</td><td>Program output directly</td></tr>
+          <tr><td>When it runs</td><td>Before execution (translation phase)</td><td>Before execution</td><td>Simultaneously with execution</td></tr>
+          <tr><td>Speed</td><td>Compiled programs run fast</td><td>Assembly programs run very fast</td><td>Interpreted programs run slower</td></tr>
+          <tr><td>Example</td><td>GCC (C), javac (Java)</td><td>NASM, MASM</td><td>Python, JavaScript</td></tr>
+        </table></div>
+      </div>
+    </div>
+
+    <div class="section-h">⭐ Likely</div>
+
+    <div class="toggle-section">
+      <div class="toggle-header" onclick="toggleSec(this)"><span>LQ5. Explain the preprocessor and its five operations with examples. <span class="chip chip-yellow">Likely</span></span><span class="toggle-arrow">▼</span></div>
+      <div class="toggle-content">
+        <p><em>(See Topic 2 above for full answer — header file inclusion, macro expansion, conditional compilation, inline functions)</em></p>
+        <p>Key: The preprocessor is text-based, runs BEFORE the compiler, and treats source code as pure text with no knowledge of syntax or semantics.</p>
+      </div>
+    </div>
+
+    <div class="toggle-section">
+      <div class="toggle-header" onclick="toggleSec(this)"><span>LQ6. Explain BNF and EBNF. Write BNF rules for a simple arithmetic expression. <span class="chip chip-yellow">Likely</span></span><span class="toggle-arrow">▼</span></div>
+      <div class="toggle-content">
+        <p><em>(See Topic 5 for BNF/EBNF table and metasymbols)</em></p>
+        <p><strong>BNF for simple arithmetic expression:</strong></p>
+        <div class="code-wrap"><div class="code-label"><span class="dot dot-r"></span><span class="dot dot-y"></span><span class="dot dot-g"></span><span>BNF Grammar</span></div>
+        <pre>&lt;expr&gt;   ::= &lt;expr&gt; + &lt;term&gt; | &lt;expr&gt; - &lt;term&gt; | &lt;term&gt;
+&lt;term&gt;   ::= &lt;term&gt; * &lt;factor&gt; | &lt;term&gt; / &lt;factor&gt; | &lt;factor&gt;
+&lt;factor&gt; ::= ( &lt;expr&gt; ) | id | integer</pre></div>
+        <p>This grammar encodes operator precedence: * and / bind tighter than + and -.</p>
+      </div>
+    </div>
+
+    <div class="toggle-section">
+      <div class="toggle-header" onclick="toggleSec(this)"><span>LQ7. Discuss semantic analysis — what it checks and the three formal methods. <span class="chip chip-yellow">Likely</span></span><span class="toggle-arrow">▼</span></div>
+      <div class="toggle-content">
+        <p><em>(See Topic 7 above for full answer — type checking, type categories, static vs dynamic, and the three formal methods)</em></p>
+        <p>Key points: Semantic analysis checks MEANING (not just structure). It does type checking. It takes parse tree + symbol table as input. Three formal methods: Operational, Denotational, Axiomatic Semantics.</p>
+      </div>
+    </div>
+
+    <div class="toggle-section">
+      <div class="toggle-header" onclick="toggleSec(this)"><span>LQ8. Explain code optimization — types and three rules it must follow. <span class="chip chip-yellow">Likely</span></span><span class="toggle-arrow">▼</span></div>
+      <div class="toggle-content">
+        <p><em>(See Topic 8 above — Three Rules: don't change meaning, increase speed, be fast itself. Types: Peephole, Local, Global, Loop, Machine-independent, Machine-dependent)</em></p>
+        <p>Key example: <code>x = x * 1</code> → optimizer removes the multiply-by-1 because it's redundant. Output is same (x = x) but faster.</p>
+      </div>
+    </div>
+
+  </div>
+  <div class="card-footer"><span>CSC 427 · APEXHUB Predictions</span><strong>APEXHUB</strong></div>
+</div>
+
+<!-- END -->
+<div class="end-card">
+  <h2>Compile Successfully. 💻</h2>
+  <p>This guide covers every topic in CSC 427 Compiler Design I — from the first character of source code to the final machine instruction.</p>
+  <p style="margin-top:12px;">Study tip: Draw the 6-phase pipeline from memory. Then trace through the Q1 code manually, producing tokens one by one. If you can do that, you understand lexical analysis.</p>
+  <p style="margin-top:16px;font-size:12px;opacity:.6;">Made with ♥ by <strong style="color:white;opacity:1;">APEXHUB</strong> · AAUA · CSC 427 · 2024/2025</p>
+</div>
+
+</div><!-- .shell -->
+
+<script>
+function toggleDark(){
+  const b=document.documentElement;
+  const dark=b.getAttribute('data-theme')==='dark';
+  b.setAttribute('data-theme',dark?'':'dark');
+  document.getElementById('themeBtn').textContent=dark?'🌙 Dark':'☀️ Light';
+}
+function toggleSec(h){h.parentElement.classList.toggle('open');}
+
+// ── COMPILER PIPELINE ──
+const phases=[
+  {num:'1',name:'Lexical Analyser',out:'Token Stream',color:'#1565c0',detail:'Reads source characters, groups into tokens. Strips whitespace and comments. Enters identifiers into the symbol table. Implements RE specifications using finite automata.'},
+  {num:'2',name:'Syntax Analyser',out:'Parse Tree / Syntax Tree',color:'#2e7d32',detail:'Takes token stream, checks grammar using CFG rules (BNF/EBNF). Builds a parse tree showing the grammatical structure. Reports syntax errors.'},
+  {num:'3',name:'Semantic Analyser',out:'Annotated Tree',color:'#6a1b9a',detail:'Checks parse tree for meaning — type checking, type coercion, undeclared variables, argument compatibility. Uses symbol table extensively.'},
+  {num:'4',name:'Intermediate Code Generator',out:'Three-Address Code (TAC)',color:'#e65100',detail:'Translates annotated parse tree to machine-independent intermediate code (TAC). Forms a bridge between analysis and synthesis phases.'},
+  {num:'5',name:'Code Optimizer',out:'Optimized Intermediate Code',color:'#00695c',detail:'Improves intermediate code: removes dead code, constant folding, loop optimization, common subexpression elimination. Must not change program meaning.'},
+  {num:'6',name:'Code Generator',out:'Target Machine Code / Assembly',color:'#b71c1c',detail:'Final phase. Produces machine code or assembly for the target machine. Handles register allocation, memory management, machine-specific optimization.'},
+];
+const pf=document.getElementById('pipeFlow');
+phases.forEach((p,i)=>{
+  const item=document.createElement('div');
+  item.className='pipe-item';
+  item.innerHTML=`<div class="pipe-box" onclick="togglePhase(this)" style="border-color:${p.color}33;">
+    <div class="pb-num">PHASE ${p.num}</div>
+    <div class="pb-name">${p.name}</div>
+    <div class="pb-out">→ ${p.out}</div>
+    <div class="pipe-detail-box" style="border-color:${p.color}55;">${p.detail}</div>
+  </div>${i<5?'<div class="pipe-arrow">↓</div>':''}`;
+  pf.appendChild(item);
+});
+function togglePhase(el){
+  document.querySelectorAll('.pipe-box').forEach(b=>b.classList.remove('active'));
+  el.classList.add('active');
+}
+
+// ── LEXER ANIMATION ──
+const tokens=[
+  {id:'ls0',tok:'main',cls:'tok-id',label:'id'},
+  {id:'ls1',tok:'(',cls:'tok-punc',label:'lparen'},
+  {id:'ls2',tok:')',cls:'tok-punc',label:'rparen'},
+  {id:'ls4',tok:'Int',cls:'tok-kw',label:'keyword'},
+  {id:'ls5',tok:'i',cls:'tok-id',label:'id'},
+  {id:'ls6',tok:'=',cls:'tok-op',label:'assign'},
+  {id:'ls7',tok:'20',cls:'tok-num',label:'int(20)'},
+  {id:'ls9',tok:'j',cls:'tok-id',label:'id'},
+  {id:'ls10',tok:'=',cls:'tok-op',label:'assign'},
+  {id:'ls11',tok:'30',cls:'tok-num',label:'int(30)'},
+  {id:'ls13',tok:'k',cls:'tok-id',label:'id'},
+  {id:'ls14',tok:';',cls:'tok-punc',label:'semicolon'},
+  {id:'ls15',tok:'k',cls:'tok-id',label:'id'},
+  {id:'ls16',tok:'=',cls:'tok-op',label:'assign'},
+  {id:'ls17',tok:'i',cls:'tok-id',label:'id'},
+  {id:'ls18',tok:'+',cls:'tok-op',label:'arithop(+)'},
+  {id:'ls19',tok:'j',cls:'tok-id',label:'id'},
+  {id:'ls20',tok:';',cls:'tok-punc',label:'semicolon'},
+  {id:'ls21',tok:'if',cls:'tok-kw',label:'keyword(if)'},
+  {id:'ls23',tok:'k',cls:'tok-id',label:'id'},
+  {id:'ls24',tok:'>=',cls:'tok-op',label:'relop(>=)'},
+  {id:'ls25',tok:'50',cls:'tok-num',label:'int(50)'},
+  {id:'ls28',tok:'printf',cls:'tok-id',label:'id(printf)'},
+  {id:'ls30',tok:'"hello"',cls:'tok-str',label:'string'},
+];
+let lexIdx=0;
+function nextToken(){
+  if(lexIdx>=tokens.length){document.getElementById('lexStatus').textContent='✓ All tokens identified! '+tokens.length+' tokens produced.';return;}
+  const t=tokens[lexIdx];
+  const el=document.getElementById(t.id);
+  if(el){el.classList.add('lex-highlight');}
+  const tok=document.createElement('span');
+  tok.className='lex-tok '+t.cls;
+  tok.textContent=t.label;
+  document.getElementById('lexTokens').appendChild(tok);
+  setTimeout(()=>tok.classList.add('show'),50);
+  document.getElementById('lexStatus').textContent='→ Found: "'+t.tok+'" → Token: '+t.label;
+  lexIdx++;
+}
+function resetLex(){
+  lexIdx=0;
+  document.querySelectorAll('.lex-highlight').forEach(el=>el.classList.remove('lex-highlight'));
+  document.getElementById('lexTokens').innerHTML='';
+  document.getElementById('lexStatus').textContent='Press "Next Token" to begin tokenizing...';
+}
+</script>
+</body>
+</html>
